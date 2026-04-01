@@ -1,0 +1,137 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #0f172a;
+    color: white;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 50px;
+    background: #020617;
+}
+
+.navbar a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.navbar a:hover {
+    color: #38bdf8;
+}
+
+.logo img {
+    height: 70px;   /* 👈 control size here */
+    width: auto;
+}
+/* HERO */
+.hero {
+    height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    background: 
+        linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+        url("/images/bp.jpg");
+
+    background-size: cover;
+    background-position: center;
+}
+
+.hero h2 {
+    font-size: 48px;
+}
+
+.hero p {
+    margin: 15px 0;
+    color: #94a3b8;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 30px;   /* space between buttons */
+    margin-top: 20px;
+} 
+.btn {
+    padding: 12px 25px;
+    background: #38bdf8;
+    color: black;
+    border-radius: 8px;   /* 👈 controls shape */
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;   /* 👈 IMPORTANT */
+    width: auto;             /* 👈 prevents stretching */
+}
+
+.btn.secondary {
+    background: transparent;
+    border: 2px solid #38bdf8;
+    color: #38bdf8;
+}
+
+/* FEATURES */
+.features {
+    display: flex;
+    justify-content: space-around;
+    padding: 50px;
+}
+
+.feature-box {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+    width: 250px;
+    text-align: center;
+}
+
+/* GAME CARDS */
+.games {
+    display: flex;
+    justify-content: center;
+    gap: 60px;   /* 👈 space between cards */
+    margin-top: 40px;
+}
+.card {
+    background: #020617;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    width: 250px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    background: #1e293b;
+}
+
+.card-img {
+    width: 80px;
+    margin-bottom: 15px;
+    transition: 0.3s;
+}
+
+.card:hover .card-img {
+    transform: scale(1.1);
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 20px;
+    background: #020617;
+    color: #94a3b8;
+}
+
