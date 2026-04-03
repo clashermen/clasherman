@@ -14,8 +14,10 @@ body {
 .navbar {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding: 20px 50px;
     background: #020617;
+    flex-wrap: wrap;
 }
 
 .navbar a {
@@ -30,16 +32,18 @@ body {
 }
 
 .logo img {
-    height: 70px;   /* 👈 control size here */
+    height: 70px;
     width: auto;
 }
+
 /* HERO */
 .hero {
-    height: 90vh;
+    min-height: 90vh;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
+    padding: 20px;
 
     background: 
         linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
@@ -58,21 +62,23 @@ body {
     color: #94a3b8;
 }
 
+/* BUTTONS */
 .buttons {
     display: flex;
     justify-content: center;
-    gap: 30px;   /* space between buttons */
+    gap: 30px;
     margin-top: 20px;
-} 
+    flex-wrap: wrap;
+}
+
 .btn {
     padding: 12px 25px;
     background: #38bdf8;
     color: black;
-    border-radius: 8px;   /* 👈 controls shape */
+    border-radius: 8px;
     font-weight: 600;
     text-decoration: none;
-    display: inline-block;   /* 👈 IMPORTANT */
-    width: auto;             /* 👈 prevents stretching */
+    display: inline-block;
 }
 
 .btn.secondary {
@@ -84,8 +90,10 @@ body {
 /* FEATURES */
 .features {
     display: flex;
-    justify-content: space-around;
-    padding: 50px;
+    justify-content: center;
+    gap: 30px;
+    padding: 50px 20px;
+    flex-wrap: wrap;
 }
 
 .feature-box {
@@ -100,9 +108,12 @@ body {
 .games {
     display: flex;
     justify-content: center;
-    gap: 60px;   /* 👈 space between cards */
+    gap: 40px;
     margin-top: 40px;
+    flex-wrap: wrap;
+    padding: 0 20px;
 }
+
 .card {
     background: #020617;
     padding: 30px;
@@ -135,3 +146,87 @@ footer {
     color: #94a3b8;
 }
 
+/* ================= RESPONSIVE ================= */
+
+/* Tablet */
+@media (max-width: 992px) {
+    .navbar {
+        padding: 20px;
+    }
+
+    .hero h2 {
+        font-size: 36px;
+    }
+
+    .features {
+        gap: 20px;
+    }
+
+    .games {
+        gap: 30px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+
+    /* Navbar */
+    .navbar {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .navbar a {
+        margin: 8px 0;
+    }
+
+    .logo img {
+        height: 50px;
+    }
+
+    /* Hero */
+    .hero {
+        min-height: 70vh;
+    }
+
+    .hero h2 {
+        font-size: 28px;
+    }
+
+    .hero p {
+        font-size: 14px;
+    }
+
+    /* Buttons */
+    .buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .btn {
+        width: 90%;
+        text-align: center;
+    }
+
+    /* Features */
+    .features {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .feature-box {
+        width: 90%;
+    }
+
+    /* Cards */
+    .games {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card {
+        width: 90%;
+    }
+}
