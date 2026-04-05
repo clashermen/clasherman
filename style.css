@@ -10,6 +10,99 @@ body {
     color: white;
 }
 
+.search-container {
+    position: relative;
+    margin-left: 40px;
+}
+
+.search-container input {
+    padding: 10px 15px;
+    width: 250px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    font-family: 'Poppins', sans-serif;
+}
+
+.search-container {
+    position: relative;
+    margin-left: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.search-container input {
+    padding: 12px 15px;
+    width: 320px; /* wider */
+    border-radius: 10px 0 0 10px;
+    border: none;
+    outline: none;
+    font-family: 'Poppins', sans-serif;
+    background: #1e293b;
+    color: white;
+}
+
+.search-container input::placeholder {
+    color: #94a3b8;
+}
+
+.search-container button {
+    padding: 12px 16px;
+    border: none;
+    background: #38bdf8;
+    color: white;
+    border-radius: 0 10px 10px 0;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.search-container button:hover {
+    background: #0ea5e9;
+}
+
+/* Dropdown */
+.search-results {
+    position: absolute;
+    top: 50px;
+    width: 100%;
+    background: #0f172a;
+    border-radius: 10px;
+    display: none;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 999;
+    border: 1px solid #1e293b;
+}
+
+.search-results div {
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #1e293b;
+    color: white;
+}
+
+.search-results div:hover {
+    background: #1e293b;
+}
+
+@media (max-width: 768px) {
+    .search-container {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .search-container input {
+        max-width: 100%;
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .search-container button {
+        padding: 10px;
+    }
+}
+
+
 /* NAVBAR */
 .navbar {
     display: flex;
@@ -29,6 +122,29 @@ body {
 
 .navbar a:hover {
     color: #38bdf8;
+}
+
+.mobile-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.mobile-nav a {
+    text-decoration: none;
+    color: #cbd5f5;
+    font-size: 13px;
+    padding: 6px 12px;
+    background: #1e293b;
+    border-radius: 20px;
+    transition: 0.2s;
+}
+
+.mobile-nav a:hover {
+    background: #38bdf8;
+    color: white;
 }
 
 .logo img {
@@ -229,4 +345,14 @@ footer {
     .card {
         width: 90%;
     }
+}
+
+.email-link {
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.email-link:hover {
+    text-decoration: underline;
 }
