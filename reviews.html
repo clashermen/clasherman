@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reviews - Clasherman</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #0a0f1e;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 30px 20px;
+}
+
+/* PAGE TITLE */
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 24px;
+}
+.page-title span {
+  color: #06b6d4;
+}
+
+/* RATING CARD */
+.rating-card {
+  background: #111827;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 30px 35px 28px;
+  margin-bottom: 30px;
+}
+.rating-card h2 {
+  margin: 0 0 22px;
+  color: #06b6d4;
+  font-size: 18px;
+  font-weight: 700;
+}
+.rating-top {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+.big-score {
+  font-size: 80px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.2);
+  line-height: 1;
+  letter-spacing: -2px;
+}
+.review-count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  color: #06b6d4;
+  font-size: 14px;
+  font-weight: 600;
+}
+.bars {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bar-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  width: 12px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.bar-track {
+  flex: 1;
+  background: rgba(255,255,255,0.08);
+  border-radius: 99px;
+  height: 10px;
+  overflow: hidden;
+}
+.bar-fill {
+  background: #06b6d4;
+  height: 100%;
+  border-radius: 99px;
+}
+
+/* USERS SAY */
+.users-say {
+  margin-top: 28px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding-top: 22px;
+}
+.users-say h3 {
+  margin: 0 0 14px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+}
+.chips {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.chip {
+  background: rgba(6,182,212,0.08);
+  border: 1px solid rgba(6,182,212,0.2);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chip-check {
+  color: #06b6d4;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+/* SECTION TITLE */
+.section-title {
+  color: #fff;
+  margin-bottom: 20px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+/* REVIEW CARDS */
+.review-card {
+  background: #111827;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 15px;
+}
+.review-card img {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  flex-shrink: 0;
+}
+.review-name {
+  font-weight: 600;
+  color: #06b6d4;
+  font-size: 14px;
+}
+.review-stars {
+  color: #06b6d4;
+  font-size: 14px;
+  margin: 2px 0;
+}
+.review-time {
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+}
+.review-text {
+  margin-top: 6px;
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-title">Reviews <span>(4.7 ⭐)</span></div>
+
+  <!-- Rating Card -->
+  <div class="rating-card">
+    <h2>Rating</h2>
+    <div class="rating-top">
+      <div>
+        <div class="big-score">4.7</div>
+        <div class="review-count"><span style="font-size:16px;">💬</span>&nbsp; 673 reviews</div>
+      </div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-label">5</span><div class="bar-track"><div class="bar-fill" style="width:82%;"></div></div></div>
+        <div class="bar-row"><span class="bar-label">4</span><div class="bar-track"><div class="bar-fill" style="width:10%;"></div></div></div>
+        <div class="bar-row"><span class="bar-label">3</span><div class="bar-track"><div class="bar-fill" style="width:4%;"></div></div></div>
+        <div class="bar-row"><span class="bar-label">2</span><div class="bar-track"><div class="bar-fill" style="width:2%;"></div></div></div>
+        <div class="bar-row"><span class="bar-label">1</span><div class="bar-track"><div class="bar-fill" style="width:7%;"></div></div></div>
+      </div>
+    </div>
+    <div class="users-say">
+      <h3>Users say</h3>
+      <div class="chips">
+        <div class="chip"><span class="chip-check">✓</span> Users repeatedly call the service very good</div>
+        <div class="chip"><span class="chip-check">✓</span> Feedback is overwhelmingly positive with near-unanimous praise</div>
+        <div class="chip"><span class="chip-check">✓</span> Overall, the platform leaves users highly satisfied</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title">All Reviews</h2>
+  <div id="reviews"></div>
+</div>
+
+<script>
+const starters = [
+    "I really liked","Honestly I think","From my experience","I tried this and",
+    "At first I thought","Surprisingly","To be honest","I didn't expect much but",
+    "So far","After using it","I've been using this for a while and",
+    "Not gonna lie","Just want to say","I have to admit","Been using this for a bit and",
+    "Wasn't sure at first but","Gotta say","I was skeptical but","Coming from someone who's tried similar sites",
+    "I've recommended this to friends because","Decided to give this a shot and",
+    "After doing some research I found that","My first impression was that",
+    "Compared to other services","I was pleasantly surprised that",
+    "I checked this out recently and","Tried it out last week and",
+    "Spent some time on this platform and","I'll be straightforward —",
+    "Can confirm that","Speaking from experience,","I went in with low expectations but",
+    "Happy to report that","Quick update —","Just finished using it and",
+    "Third time using this and","Been a regular here and","I revisited this site and",
+    "I don't usually leave reviews but","Worth mentioning that"
+];
+const middles = [
+    "the website works very smoothly","the process was simple and easy",
+    "everything was delivered quickly","the account worked perfectly",
+    "the service was reliable","I had no major issues",
+    "the experience was pretty good","it actually saved me time",
+    "the platform is easy to use","support was helpful and responsive",
+    "the whole process felt safe","everything was straightforward",
+    "the checkout was super clean","my order came through without any problems",
+    "the interface is intuitive and smooth","delivery was faster than I expected",
+    "the prices are fair for what you get","everything loaded fast and without errors",
+    "the team behind it clearly knows what they're doing","the steps were clearly explained",
+    "it felt trustworthy from the start","setup took less than a minute",
+    "no verification headaches at all","the whole thing ran without a glitch",
+    "I got exactly what was described","the dashboard is clean and well-organised",
+    "communication was quick and clear","the quality matched what was advertised",
+    "everything worked on the first try","no waiting around — it was instant",
+    "the instructions were clear and easy to follow","I didn't need to contact support at all",
+    "it handled my request without any delays","the value for money is genuinely good",
+    "it did exactly what it said it would","the whole site feels polished and professional",
+    "the transaction was smooth from start to finish","nothing felt sketchy or complicated",
+    "I was in and out in under five minutes","there were no hidden steps or surprises"
+];
+const endings = [
+    "and I would definitely use it again.","so I recommend it.",
+    "and I'm satisfied with it.","which was better than expected.",
+    "so overall it's good.","and I had no problems.",
+    "so I'm happy with it.","definitely worth trying.",
+    "and it works fine for me.","so far no complaints.",
+    "and I'll be back for sure.","10/10 would use again.",
+    "so I'd say give it a shot.","which honestly impressed me.",
+    "and I've already told my friends.","so it gets a thumbs up from me.",
+    "and that's all I really needed.","so I have nothing bad to say.",
+    "which makes it stand out.","and I feel like I got good value.",
+    "so it's earned my trust.","and I appreciate how easy it was.",
+    "which kept things stress-free.","and I'd rate it highly.",
+    "so I'll keep coming back.","and the whole thing felt legit.",
+    "which is rare to find these days.","and I left feeling good about it.",
+    "so no regrets at all.","and the results spoke for themselves."
+];
+const shortReviews = [
+    "good app","works well","pretty solid","nice service",
+    "very fast delivery","easy to use","no issues at all","legit site",
+    "really good","simple and clean","smooth experience","would buy again",
+    "fast and easy","no complaints","highly recommend","does what it says",
+    "great value","super quick","works as expected","happy with it",
+    "very straightforward","clean interface","totally worth it","instant delivery",
+    "reliable service","zero problems","came through fast","top notch",
+    "exactly as described","very smooth process","slick and simple",
+    "better than expected","nice and easy","quick and painless",
+    "solid platform","all good here","ran perfectly","no drama at all",
+    "got what I needed","impressed honestly"
+];
+const emojis = ["👍","🔥","💯","👌","⚡","🙌","✅","😊","💪","🎯","👏","🙏"];
+function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function generateName(){
+    const a = ["dark","fast","cool","pro","real","ghost","alpha","hyper","wild","silent","rapid","epic","iron","bold","sharp","ultra","neo","mega","turbo","prime","blaze","steel","void","neon"];
+    const b = ["ninja","tiger","wolf","gamer","hero","sniper","king","clasher","dragon","player","shadow","hunter","phoenix","ranger","viper","falcon","striker","blade","storm","cipher","runner","byte"];
+    return a[Math.floor(Math.random()*a.length)]+b[Math.floor(Math.random()*b.length)]+Math.floor(Math.random()*99999);
+}
+function randomTimeAgo(){
+    let days=Math.floor(Math.random()*364)+2;
+    if(days<7) return days+" days ago";
+    if(days<30){let w=Math.floor(days/7);return w+(w===1?" week ago":" weeks ago");}
+    if(days<365){let m=Math.floor(days/30);return m+(m===1?" month ago":" months ago");}
+    return "1 year ago";
+}
+const usedReviews=new Set();
+function generateReview(){
+    for(let i=0;i<200;i++){
+        let t=Math.random(),txt;
+        if(t<0.25){
+            txt=rand(shortReviews);
+            if(Math.random()<0.3) txt+=" "+rand(emojis);
+        } else if(t<0.7){
+            txt=`${rand(starters)} ${rand(middles)} ${rand(endings)}`;
+            if(Math.random()<0.3) txt+=" "+rand(emojis);
+        } else {
+            txt=`${rand(starters)} ${rand(middles)}. ${rand(starters).toLowerCase()} ${rand(middles)} ${rand(endings)}`;
+            if(Math.random()<0.4) txt+=" "+rand(emojis);
+        }
+        if(!usedReviews.has(txt)){usedReviews.add(txt);return txt;}
+    }
+    let f=rand(shortReviews)+" (review #"+(usedReviews.size+1)+")";
+    usedReviews.add(f);return f;
+}
+function stars(){return "★★★★★".slice(0,Math.random()<0.85?5:4);}
+
+const container=document.getElementById("reviews");
+for(let i=0;i<248;i++){
+    const styles=["adventurer","avataaars","big-ears","bottts","croodles","fun-emoji","lorelei","micah","miniavs","notionists","open-peeps","personas","pixel-art"];
+    const style=styles[Math.floor(Math.random()*styles.length)];
+    const seed=Math.random().toString(36).substring(2,10);
+    const avatar=`https://api.dicebear.com/7.x/${style}/svg?seed=${seed}`;
+
+    const card = document.createElement('div');
+    card.className = 'review-card';
+    card.innerHTML = `
+        <img src="${avatar}">
+        <div>
+            <div class="review-name">${generateName()}</div>
+            <div class="review-stars">${stars()}</div>
+            <div class="review-time">${randomTimeAgo()}</div>
+            <div class="review-text">${generateReview()}</div>
+        </div>`;
+    container.appendChild(card);
+}
+</script>
+</body>
+</html>
