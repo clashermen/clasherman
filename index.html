@@ -14,16 +14,25 @@
 <body>
 
 <!-- NAVBAR -->
+
+
 <header class="navbar">
+    
     <div class="logo">
     <img src="images/logo.png" alt="Clasherman Logo">
 </div>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="coc.html">Clash of Clans</a>
-        <a href="cr.html">Clash Royale</a>
-        <a href="clans.html">Clans</a>
-    </nav>
+
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search accounts, clans..." />
+    <button id="searchBtn">🔍</button>
+    <div id="searchResults" class="search-results"></div>
+</div>
+
+   <div class="mobile-nav">
+    <a href="contact.html">Contact us</a>
+    <a href="reviews.html">Reviews</a>
+    <a href="terms.html">T&C</a>
+</div>
 </header>
 
 <!-- HERO SECTION -->
@@ -31,10 +40,7 @@
     <div class="hero-content">
         <h2>Buy Premium Clash Accounts</h2>
         <p>In-Demand accounts. Safe deals. Instant delivery.</p>
-        <div class="buttons">
-            <a href="coc.html" class="btn">Explore COC</a>
-            <a href="cr.html" class="btn secondary">Explore CR</a>
-        </div>
+       
         <section class="games">
    
     <div class="card">
@@ -62,6 +68,55 @@
 </section>
     </div>
 </section>
+
+<!-- TRUST BAR -->
+<section class="trust-bar">
+    <div class="trust-item">
+        <div class="trust-num">4.7 ★</div>
+        <div class="trust-label">Average Rating</div>
+    </div>
+    <div class="trust-item">
+        <div class="trust-num">500+</div>
+        <div class="trust-label">Reviews</div>
+    </div>
+    <div class="trust-item">
+        <div class="trust-num">⚡ Instant</div>
+        <div class="trust-label">Delivery</div>
+    </div>
+    <div class="trust-item">
+        <div class="trust-num">✅ Verified</div>
+        <div class="trust-label">Listings</div>
+    </div>
+</section>
+
+<style>
+.trust-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 48px;
+    padding: 22px 24px;
+    background: #0a0f1e;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    flex-wrap: wrap;
+}
+.trust-item {
+    text-align: center;
+}
+.trust-num {
+    font-size: 20px;
+    font-weight: 600;
+    color: #06b6d4;
+    font-family: 'Poppins', sans-serif;
+}
+.trust-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    margin-top: 2px;
+    font-family: 'Poppins', sans-serif;
+}
+</style>
 
 <!-- FEATURES -->
 <section class="features">
