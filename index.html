@@ -40,11 +40,466 @@ s0.parentNode.insertBefore(s1,s0);
     </div>
 
     <div class="mobile-nav">
-        <a href="https://tawk.to/chat/69d222061772311c3585e2a0/1jled9qr1">24/7 Live Support</a>
+        <a href="https://tawk.to/chat/69d222061772311c3585e2a0/1jled9qr1" target="_blank">Contact us</a>
         <a href="reviews.html">Reviews</a>
         <a href="terms.html">T&C</a>
     </div>
+
+    <div class="nav-auth">
+        <span id="authBtn" onclick="openAuth()" class="nav-login-btn">🔐 Login</span>
+        <span id="userGreeting" style="display:none;" class="mobile-nav-user">
+            <img id="userAvatar" src="" style="width:32px;height:32px;border-radius:50%;border:2px solid #38bdf8;object-fit:cover;background:#1e293b;">
+            <span id="userNameDisplay"></span>
+            <span onclick="logout()" class="mobile-nav-logout">Logout</span>
+        </span>
+    </div>
 </header>
+
+<!-- AUTH MODAL -->
+<div id="authModal" class="auth-overlay" onclick="closeAuthOutside(event)">
+    <div class="auth-box">
+        <button class="auth-close" onclick="closeAuth()">✕</button>
+
+        <div class="auth-tabs" id="authTabs">
+            <button id="tabLogin" class="auth-tab active" onclick="switchTab('login')">Login</button>
+            <button id="tabSignup" class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <p class="auth-title">Welcome back</p>
+            <input type="email" id="loginEmail" placeholder="Email" required>
+            <input type="password" id="loginPass" placeholder="Password" required>
+            <p id="loginError" class="auth-error"></p>
+            <button type="submit" class="auth-submit">Login</button>
+            <p class="forgot-link" onclick="switchTab('forgot')">Forgot password?</p>
+        </form>
+
+        <!-- SIGNUP FORM -->
+        <form id="signupForm" style="display:none;" onsubmit="handleSignup(event)">
+            <p class="auth-title">Create account</p>
+            <input type="text" id="signupName" placeholder="Username" required>
+            <input type="email" id="signupEmail" placeholder="Email" required>
+            <input type="password" id="signupPass" placeholder="Password (min 6 chars)" minlength="6" required>
+            <p id="signupError" class="auth-error"></p>
+            <button type="submit" class="auth-submit">Sign Up</button>
+        </form>
+
+        <!-- FORGOT PASSWORD FORM -->
+        <div id="forgotForm" style="display:none;">
+            <p class="auth-title">Reset password</p>
+            <p class="auth-subtitle">Enter your email and we'll send you a reset link.</p>
+            <input type="email" id="forgotEmail" placeholder="Your email address">
+            <p id="forgotError" class="auth-error"></p>
+            <p id="forgotSuccess" class="auth-success"></p>
+            <button onclick="handleForgot()" class="auth-submit">Send Reset Link</button>
+            <p class="forgot-link" onclick="switchTab('login')">← Back to login</p>
+        </div>
+    </div>
+</div>
+
+<style>
+/* NAV AUTH SLOT */
+.nav-auth {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 20px;
+}
+
+/* LOGIN BUTTON */
+.nav-login-btn {
+    cursor: pointer;
+    background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+    color: #0f172a !important;
+    font-weight: 700;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 14px rgba(56,189,248,0.35);
+    transition: 0.2s;
+    white-space: nowrap;
+}
+.nav-login-btn:hover {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    box-shadow: 0 4px 20px rgba(56,189,248,0.5);
+    transform: translateY(-1px);
+}
+
+.mobile-nav-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+#userNameDisplay {
+    color: #38bdf8;
+    font-weight: 600;
+}
+.mobile-nav-logout {
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid #475569;
+    color: #94a3b8 !important;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    transition: 0.2s;
+}
+.mobile-nav-logout:hover { border-color: #38bdf8; color: #38bdf8 !important; }
+
+/* MODAL OVERLAY */
+.auth-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+.auth-overlay.open { display: flex; }
+
+/* MODAL BOX */
+.auth-box {
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 16px;
+    padding: 36px 32px 28px;
+    width: 360px;
+    max-width: 90vw;
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+}
+.auth-close {
+    position: absolute;
+    top: 14px; right: 16px;
+    background: none; border: none;
+    color: #94a3b8; font-size: 18px;
+    cursor: pointer;
+}
+.auth-close:hover { color: white; }
+
+/* TABS */
+.auth-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 24px;
+    background: #1e293b;
+    border-radius: 10px;
+    padding: 4px;
+}
+.auth-tab {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #94a3b8;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.auth-tab.active {
+    background: #38bdf8;
+    color: #0f172a;
+    font-weight: 600;
+}
+
+/* FORM */
+.auth-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 18px;
+}
+.auth-box input {
+    width: 100%;
+    padding: 11px 14px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: 1px solid #1e293b;
+    background: #1e293b;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+}
+.auth-box input:focus { border-color: #38bdf8; }
+.auth-box input::placeholder { color: #475569; }
+.auth-submit {
+    width: 100%;
+    padding: 11px;
+    border-radius: 8px;
+    border: none;
+    background: #38bdf8;
+    color: #0f172a;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 4px;
+}
+.auth-submit:hover { background: #0ea5e9; }
+.auth-error {
+    color: #f87171;
+    font-size: 12px;
+    margin: -6px 0 10px;
+    min-height: 16px;
+}
+.auth-success {
+    color: #4ade80;
+    font-size: 13px;
+    margin: -6px 0 10px;
+    min-height: 16px;
+}
+.auth-subtitle {
+    color: #94a3b8;
+    font-size: 13px;
+    margin: -10px 0 16px;
+}
+.forgot-link {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #38bdf8;
+    cursor: pointer;
+}
+.forgot-link:hover { text-decoration: underline; }
+</style>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+// ── Firebase init ─────────────────────────────────────
+const firebaseConfig = {
+    apiKey: "AIzaSyDXWP9NHvhgPcsIA3Fo52CbpPTKoSejqx8",
+    authDomain: "clasherman.firebaseapp.com",
+    projectId: "clasherman",
+    storageBucket: "clasherman.firebasestorage.app",
+    messagingSenderId: "536431763369",
+    appId: "1:536431763369:web:272ca187de05caadcaeeb8",
+    measurementId: "G-GVSYVRX0Z4"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// ── Modal helpers ─────────────────────────────────────
+function openAuth() { document.getElementById('authModal').classList.add('open'); }
+function closeAuth() { document.getElementById('authModal').classList.remove('open'); }
+function closeAuthOutside(e) { if (e.target.id === 'authModal') closeAuth(); }
+
+function switchTab(tab) {
+    document.getElementById('loginForm').style.display  = tab === 'login'  ? '' : 'none';
+    document.getElementById('signupForm').style.display = tab === 'signup' ? '' : 'none';
+    document.getElementById('forgotForm').style.display = tab === 'forgot' ? '' : 'none';
+    document.getElementById('authTabs').style.display   = tab === 'forgot' ? 'none' : '';
+    document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+    document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+    document.getElementById('loginError').textContent   = '';
+    document.getElementById('signupError').textContent  = '';
+    document.getElementById('forgotError').textContent  = '';
+    document.getElementById('forgotSuccess').textContent = '';
+}
+
+// ── Forgot Password ───────────────────────────────────
+async function handleForgot() {
+    const email   = document.getElementById('forgotEmail').value.trim();
+    const errEl   = document.getElementById('forgotError');
+    const succEl  = document.getElementById('forgotSuccess');
+    errEl.textContent = ''; succEl.textContent = '';
+    if (!email) { errEl.textContent = 'Please enter your email.'; return; }
+    try {
+        await auth.sendPasswordResetEmail(email);
+        succEl.textContent = '✅ Reset link sent! Check your inbox (and spam folder).';
+        document.getElementById('forgotEmail').value = '';
+    } catch(err) {
+        errEl.textContent = friendlyError(err.code);
+    }
+}
+
+// ── Sign Up ───────────────────────────────────────────
+// ── Device info helper ────────────────────────────────
+function getDeviceInfo() {
+    const ua = navigator.userAgent;
+    let browser = 'Unknown', os = 'Unknown';
+    if (/Chrome/.test(ua) && !/Edge/.test(ua)) browser = 'Chrome';
+    else if (/Firefox/.test(ua)) browser = 'Firefox';
+    else if (/Safari/.test(ua) && !/Chrome/.test(ua)) browser = 'Safari';
+    else if (/Edge/.test(ua)) browser = 'Edge';
+    else if (/OPR|Opera/.test(ua)) browser = 'Opera';
+    if (/Windows/.test(ua)) os = 'Windows';
+    else if (/Android/.test(ua)) os = 'Android';
+    else if (/iPhone|iPad/.test(ua)) os = 'iOS';
+    else if (/Mac/.test(ua)) os = 'Mac';
+    else if (/Linux/.test(ua)) os = 'Linux';
+    const mobile = /Mobi|Android/i.test(ua) ? 'Mobile' : 'Desktop';
+    return { browser, os, device: mobile, screenRes: `${screen.width}x${screen.height}` };
+}
+
+async function handleSignup(e) {
+    e.preventDefault();
+    const name  = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const pass  = document.getElementById('signupPass').value;
+    const errEl = document.getElementById('signupError');
+    const btn   = e.target.querySelector('button[type=submit]');
+    btn.disabled = true; btn.textContent = 'Creating...';
+    try {
+        const cred = await auth.createUserWithEmailAndPassword(email, pass);
+        await cred.user.updateProfile({ displayName: name });
+        await db.collection('users').doc(cred.user.uid).set({
+            name,
+            email,
+            joinedAt:      firebase.firestore.FieldValue.serverTimestamp(),
+            lastLogin:     firebase.firestore.FieldValue.serverTimestamp(),
+            loginCount:    1,
+            ...getDeviceInfo()
+        });
+        closeAuth();
+    } catch(err) {
+        errEl.textContent = friendlyError(err.code);
+    }
+    btn.disabled = false; btn.textContent = 'Sign Up';
+}
+
+// ── Login ─────────────────────────────────────────────
+async function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPass').value;
+    const errEl = document.getElementById('loginError');
+    const btn   = e.target.querySelector('button[type=submit]');
+    btn.disabled = true; btn.textContent = 'Logging in...';
+    try {
+        const cred = await auth.signInWithEmailAndPassword(email, pass);
+        await db.collection('users').doc(cred.user.uid).update({
+            lastLogin:  firebase.firestore.FieldValue.serverTimestamp(),
+            loginCount: firebase.firestore.FieldValue.increment(1),
+            ...getDeviceInfo()
+        });
+        closeAuth();
+    } catch(err) {
+        errEl.textContent = friendlyError(err.code);
+    }
+    btn.disabled = false; btn.textContent = 'Login';
+}
+
+// ── Logout ────────────────────────────────────────────
+function logout() { auth.signOut(); }
+
+// ── Auth state listener ───────────────────────────────
+auth.onAuthStateChanged(user => {
+    const btn      = document.getElementById('authBtn');
+    const greeting = document.getElementById('userGreeting');
+    const nameEl   = document.getElementById('userNameDisplay');
+    const avatarEl = document.getElementById('userAvatar');
+    if (user) {
+        btn.style.display      = 'none';
+        greeting.style.display = 'flex';
+        nameEl.textContent     = user.displayName || user.email;
+        if (avatarEl) avatarEl.src = user.photoURL || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${user.uid}`;
+    } else {
+        btn.style.display      = '';
+        greeting.style.display = 'none';
+    }
+});
+
+// ── Friendly error messages ───────────────────────────
+function friendlyError(code) {
+    const map = {
+        'auth/email-already-in-use': 'This email is already registered.',
+        'auth/invalid-email':        'Invalid email address.',
+        'auth/weak-password':        'Password must be at least 6 characters.',
+        'auth/user-not-found':       'No account found. Please Sign Up first.',
+        'auth/wrong-password':       'Incorrect password. Try forgot password.',
+        'auth/invalid-credential':   'No account found or wrong password. Please Sign Up if you are new.',
+        'auth/too-many-requests':    'Too many attempts. Try again later.',
+        'auth/network-request-failed': 'Network error. Check your connection.',
+    };
+    return map[code] || `Error: ${code}`;
+}
+
+// ── Search Data ───────────────────────────────────────
+const allAccounts = [
+    // Clash of Clans
+    { title: "TH18 | RC & Warden Max | High Equipment | 17 Skins | BH10 | 4 Digit Rank", price: "$89",  game: "CoC",  page: "coc.html", link: "cocaccounts/acc1.html" },
+    { title: "TH18 | Great Britain Local | Parimal Scenery | Max Heroes | High Equipment | BH10", price: "$199", game: "CoC",  page: "coc.html", link: "cocaccounts/acc2.html" },
+    { title: "TH18 | Germany Local | Legendary Skin | High Heroes | 26 Hero Skins | High Epic Equipment", price: "$99",  game: "CoC",  page: "coc.html", link: "cocaccounts/acc3.html" },
+    { title: "TH18 Semi Max | Builder Apprentice Max | High Heroes | High Epic Equipment", price: "$59",  game: "CoC",  page: "coc.html", link: "cocaccounts/acc4.html" },
+    { title: "TH17 | Donation Account | Decent Heroes | 4 Skins | Dragon Statue", price: "$29",  game: "CoC",  page: "coc.html", link: "cocaccounts/acc5.html" },
+    { title: "TH18 | All Christmas Trees | Anniversary Cake | 28 Hero Skins | 10 Epic Equipment | BH Max", price: "$249", game: "CoC",  page: "coc.html", link: "cocaccounts/acc6.html" },
+    { title: "TH16 Semi Max | High Epic Equipment | Many Obstacles & Decorations", price: "$19",  game: "CoC",  page: "coc.html", link: "cocaccounts/acc7.html" },
+    { title: "TH16 Semi Max | Clash Mania Scenery | Dragon Statue | 6 Skins | Epic Equipment", price: "$24",  game: "CoC",  page: "coc.html", link: "cocaccounts/acc8.html" },
+    { title: "TH16 Semi Max | 2 Beautiful Sceneries | High Level Heroes | BH10", price: "$29",  game: "CoC",  page: "coc.html", link: "cocaccounts/acc9.html" },
+    { title: "TH17 Semi Max | High Level Defence | Many Epic Equipment", price: "$39",  game: "CoC",  page: "coc.html", link: "cocaccounts/acc10.html" },
+    { title: "TH18 | High Defence & Troops | 12 Epic Equipment | 12 Skins | Painter Scenery", price: "$59",  game: "CoC",  page: "coc.html", link: "cocaccounts/acc11.html" },
+    { title: "TH17 | Ghost Scenery | 10 Skins | 500 Gems Name Change | Cheap In-Game Shop", price: "$49",  game: "CoC",  page: "coc.html", link: "cocaccounts/acc12.html" },
+    { title: "TH16 Almost Maxed | High Equipment | Original Mail | Cyber Scenery", price: "$45",  game: "CoC",  page: "coc.html", link: "cocaccounts/acc13.html" },
+    { title: "TH17 Maxed | 5 Sceneries | 11 Skins | Maxed Heroes | High Level Troops", price: "$79",  game: "CoC",  page: "coc.html", link: "cocaccounts/acc14.html" },
+    // Clash Royale
+    { title: "Arena 27 | Emote Collection | Champion & Legendary Badges | Evo & Max Cards", price: "$29",  game: "CR",   page: "cr.html", link: "craccounts/acc1.html" },
+    { title: "Arena 29 | Many Emotes | Evo & Max Cards | Stacked Badges", price: "$79",  game: "CR",   page: "cr.html", link: "craccounts/acc2.html" },
+    { title: "Arena 24 | Emote & Tower Collection | Cheap", price: "$25",  game: "CR",   page: "cr.html", link: "craccounts/acc3.html" },
+    { title: "Arena 28 | Rare Emote Collection | Banner & Badges | Many Max & Evo Cards", price: "$45",  game: "CR",   page: "cr.html", link: "craccounts/acc4.html" },
+    // Clans
+    { title: "War Legends", price: "—", game: "Clan", page: "clans.html", link: "clans/clan1.html" },
+    { title: "Elite Warriors", price: "—", game: "Clan", page: "clans.html", link: "clans/clan2.html" },
+];
+
+const gameColors = { CoC: "#38bdf8", CR: "#a78bfa", Clan: "#4ade80" };
+
+const searchInput   = document.getElementById('searchInput');
+const searchBtn     = document.getElementById('searchBtn');
+const searchResults = document.getElementById('searchResults');
+
+function runSearch() {
+    const q = searchInput.value.trim().toLowerCase();
+    searchResults.innerHTML = '';
+    if (!q) { searchResults.style.display = 'none'; return; }
+
+    const matches = allAccounts.filter(a => a.title.toLowerCase().includes(q));
+
+    if (matches.length === 0) {
+        searchResults.innerHTML = '<div style="color:#94a3b8;padding:12px;">No results found</div>';
+        searchResults.style.display = 'block';
+        return;
+    }
+
+    matches.forEach(acc => {
+        const div = document.createElement('div');
+        div.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:10px;';
+        div.innerHTML = `
+            <div>
+                <span style="font-size:10px;font-weight:700;color:${gameColors[acc.game]};margin-right:6px;">${acc.game}</span>
+                <span style="font-size:13px;">${acc.title}</span>
+            </div>
+            <span style="font-size:13px;font-weight:700;color:#38bdf8;white-space:nowrap;">${acc.price}</span>`;
+        div.addEventListener('click', () => { window.location.href = acc.link; });
+        searchResults.appendChild(div);
+    });
+    searchResults.style.display = 'block';
+}
+
+searchInput.addEventListener('input', runSearch);
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
+searchBtn.addEventListener('click', runSearch);
+
+document.addEventListener('click', e => {
+    if (!e.target.closest('.search-container')) {
+        searchResults.style.display = 'none';
+    }
+});
+</script>
 
 <!-- HERO SECTION -->
 <section class="hero">

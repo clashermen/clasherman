@@ -3,23 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clash of Clans Accounts</title>
+<title>Clash of Clans Accounts - Clasherman</title>
 
 <link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="auth.js" defer></script>
 
 <style>
 /* PAGE */
 .coc-container {
-    padding: 40px 20px;
+    padding: 50px 40px;
     text-align: center;
+    font-family: 'Poppins', sans-serif;
 }
+
+/* HEADING */
+.coc-container h1 {
+    font-size: 42px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 1px;
+}
+
+.coc-container h1 span {
+    color: #38bdf8;
+}
+
+/* SUBTEXT */
+.coc-subtitle {
+    color: #94a3b8;
+    margin-top: 8px;
+    font-size: 15px;
+}
+
 
 /* GRID */
 .coc-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 25px;
-    margin-top: 30px;
+    margin-top: 35px;
 }
 
 /* CARD */
@@ -30,10 +56,12 @@
     text-decoration: none;
     color: white;
     transition: 0.3s;
+    font-family: 'Poppins', sans-serif;
 }
 
 .coc-card:hover {
     transform: translateY(-8px);
+    background: #263548;
 }
 
 /* IMAGE */
@@ -43,85 +71,226 @@
     object-fit: cover;
 }
 
-/* TITLE */
+/* CARD BODY */
+.coc-card-body {
+    padding: 12px 15px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .coc-card h3 {
-    padding: 15px;
-    font-size: 18px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: #e2e8f0;
+    margin: 0;
+}
+
+/* PRICE BADGE */
+.coc-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #38bdf8;
+}
+
+/* DELIVERY TAG */
+.coc-tag {
+    font-size: 11px;
+    color: #4ade80;
+    font-weight: 500;
+}
+
+/* PLACEHOLDER IMAGE */
+.coc-card .img-wrap {
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(135deg, #0f2744, #1e3a5f);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #38bdf8;
+    font-weight: 600;
+    overflow: hidden;
+}
+
+.coc-card .img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.coc-card.hidden { display: none; }
+
+@media (max-width: 768px) {
+    .coc-container h1 { font-size: 28px; }
+    .coc-container { padding: 30px 20px; }
 }
 </style>
-
 </head>
 
 <body>
 
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="logo">
+        <img src="images/logo.png" alt="Clasherman Logo">
+    </div>
+
+    <div class="search-container">
+        <input type="text" placeholder="Search accounts, clans..." />
+        <button>🔍</button>
+    </div>
+
+    <div class="mobile-nav">
+        <a href="index.html">Home</a>
+        <a href="https://tawk.to/chat/69d222061772311c3585e2a0/1jled9qr1" target="_blank">Contact us</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="terms.html">T&C</a>
+    </div>
+</header>
+
 <div class="coc-container">
-    <h1>Clash of Clans Accounts</h1>
+    <h1><span>Clash of Clans Accounts</span> </h1>
+    <p class="coc-subtitle">Max bases, semi & rushed — TH10 to TH18 available</p>
 
     <div class="coc-grid">
 
-        <!-- CARD 1 -->
         <a href="cocaccounts/acc1.html" class="coc-card">
-            <img src="cocimg/account1.jpg">
-            <h3>TH13 Max Account</h3>
+            <div class="img-wrap"><img src="cocimg/account1.jpg" onerror="this.style.display='none'">TH18</div>
+            <div class="coc-card-body">
+                <h3>TH18 | RC & Warden Max | High Equipment | 17 Skins | BH10 | 4 Digit Rank</h3>
+                <span class="coc-price">$89</span>
+                <span class="coc-tag">⚡ Instant Delivery</span>
+            </div>
         </a>
 
-        <!-- CARD 2 -->
-        <a href="cocaccounts/acc1.html" class="coc-card">
-            <img src="cocimg/account2.jpg">
-            <h3>TH18 Semi Max</h3>
+        <a href="cocaccounts/acc2.html" class="coc-card">
+            <div class="img-wrap"><img src="cocimg/account2.jpg" onerror="this.style.display='none'">TH18</div>
+            <div class="coc-card-body">
+                <h3>TH18 | Great Britain Local | Parimal Scenery | Max Heroes | High Equipment | BH10</h3>
+                <span class="coc-price">$199</span>
+                <span class="coc-tag">⚡ Instant Delivery</span>
+            </div>
         </a>
 
-        <!-- CARD 3 -->
-        <a href="cocaccounts/acc1.html" class="coc-card">
-            <img src="cocimg/account3.jpg">
-            <h3>TH16 Max</h3>
-        </a>
-         <a href="account3.html" class="coc-card">
-            <img src="cocimg/account4.jpg">
-            <h3>TH16 Good Base</h3>
-        </a>
-
-         <a href="account3.html" class="coc-card">
-            <img src="cocimg/account5.jpg">
-            <h3>TH118 Semi Max</h3>
+        <a href="cocaccounts/acc3.html" class="coc-card">
+            <div class="img-wrap"><img src="cocimg/account3.jpg" onerror="this.style.display='none'">TH18</div>
+            <div class="coc-card-body">
+                <h3>TH18 | Germany Local | Legendary Skin | High Heroes | 26 Hero Skins | High Epic Equipment</h3>
+                <span class="coc-price">$99</span>
+                <span class="coc-tag">⚡ Instant Delivery</span>
+            </div>
         </a>
 
-         <a href="account3.html" class="coc-card">
-            <img src="cocimg/account6.jpg">
-            <h3>TH17 Rushed</h3>
+        <a href="cocaccounts/acc4.html" class="coc-card">
+            <div class="img-wrap"><img src="cocimg/account4.jpg" onerror="this.style.display='none'">TH18</div>
+            <div class="coc-card-body">
+                <h3>TH18 Semi Max | Builder Apprentice Max | High Heroes | High Epic Equipment</h3>
+                <span class="coc-price">$59</span>
+                <span class="coc-tag">⚡ Instant Delivery</span>
+            </div>
         </a>
 
-         <a href="account3.html" class="coc-card">
-            <img src="cocimg/account7.jpg">
-            <h3>TH17 Good Base</h3>
+        <a href="cocaccounts/acc5.html" class="coc-card">
+            <div class="img-wrap"><img src="cocimg/account5.jpg" onerror="this.style.display='none'">TH17</div>
+            <div class="coc-card-body">
+                <h3>TH17 | Donation Account | Decent Heroes | 4 Skins | Dragon Statue</h3>
+                <span class="coc-price">$29</span>
+                <span class="coc-tag">⚡ Instant Delivery</span>
+            </div>
+        </a>
 
-             <a href="account3.html" class="coc-card">
-            <img src="cocimg/account8.jpg">
-            <h3>TH18 Max</h3>
+        <a href="cocaccounts/acc6.html" class="coc-card">
+            <div class="img-wrap"><img src="cocimg/account6.jpg" onerror="this.style.display='none'">TH18</div>
+            <div class="coc-card-body">
+                <h3>TH18 | All Christmas Trees | Anniversary Cake | 28 Hero Skins | 10 Epic Equipment | BH Max</h3>
+                <span class="coc-price">$249</span>
+                <span class="coc-tag">⚡ Instant Delivery</span>
+            </div>
+        </a>
 
-             <a href="account3.html" class="coc-card">
-            <img src="cocimg/account9.jpg">
-            <h3>TH17 Max</h3>
+        <a href="cocaccounts/acc7.html" class="coc-card">
+            <div class="img-wrap"><img src="cocimg/account7.jpg" onerror="this.style.display='none'">TH16</div>
+            <div class="coc-card-body">
+                <h3>TH16 Semi Max | High Epic Equipment | Many Obstacles & Decorations</h3>
+                <span class="coc-price">$19</span>
+                <span class="coc-tag">⚡ Instant Delivery</span>
+            </div>
+        </a>
 
-             <a href="account3.html" class="coc-card">
-            <img src="cocimg/account10.jpg">
-            <h3>TH17 Good Base</h3>
+        <a href="cocaccounts/acc8.html" class="coc-card">
+            <div class="img-wrap"><img src="cocimg/account8.jpg" onerror="this.style.display='none'">TH16</div>
+            <div class="coc-card-body">
+                <h3>TH16 Semi Max | Clash Mania Scenery | Dragon Statue | 6 Skins | Epic Equipment</h3>
+                <span class="coc-price">$24</span>
+                <span class="coc-tag">⚡ Instant Delivery</span>
+            </div>
+        </a>
 
-             <a href="account3.html" class="coc-card">
-            <img src="cocimg/account11.jpg">
-            <h3>TH18 Max</h3>
+        <a href="cocaccounts/acc9.html" class="coc-card">
+            <div class="img-wrap"><img src="cocimg/account9.jpg" onerror="this.style.display='none'">TH16</div>
+            <div class="coc-card-body">
+                <h3>TH16 Semi Max | 2 Beautiful Sceneries | High Level Heroes | BH10</h3>
+                <span class="coc-price">$29</span>
+                <span class="coc-tag">⚡ Instant Delivery</span>
+            </div>
+        </a>
 
-             <a href="account3.html" class="coc-card">
-            <img src="cocimg/account12.jpg">
-            <h3>TH17 Semi max</h3>
+        <a href="cocaccounts/acc10.html" class="coc-card">
+            <div class="img-wrap"><img src="cocimg/account10.jpg" onerror="this.style.display='none'">TH17</div>
+            <div class="coc-card-body">
+                <h3>TH17 Semi Max | High Level Defence | Many Epic Equipment</h3>
+                <span class="coc-price">$39</span>
+                <span class="coc-tag">⚡ Instant Delivery</span>
+            </div>
+        </a>
 
-             <a href="account3.html" class="coc-card">
-            <img src="cocimg/account13.jpg">
-            <h3>TH18 Max</h3>
+        <a href="cocaccounts/acc11.html" class="coc-card">
+            <div class="img-wrap"><img src="cocimg/account11.jpg" onerror="this.style.display='none'">TH18</div>
+            <div class="coc-card-body">
+                <h3>TH18 | High Defence & Troops | 12 Epic Equipment | 12 Skins | Painter Scenery</h3>
+                <span class="coc-price">$59</span>
+                <span class="coc-tag">⚡ Instant Delivery</span>
+            </div>
+        </a>
+
+        <a href="cocaccounts/acc12.html" class="coc-card">
+            <div class="img-wrap"><img src="cocimg/account12.jpg" onerror="this.style.display='none'">TH17</div>
+            <div class="coc-card-body">
+                <h3>TH17 | Ghost Scenery | 10 Skins | 500 Gems Name Change | Cheap In-Game Shop</h3>
+                <span class="coc-price">$49</span>
+                <span class="coc-tag">⚡ Instant Delivery</span>
+            </div>
+        </a>
+
+        <a href="cocaccounts/acc13.html" class="coc-card">
+            <div class="img-wrap"><img src="cocimg/account13.jpg" onerror="this.style.display='none'">TH16</div>
+            <div class="coc-card-body">
+                <h3>TH16 Almost Maxed | High Equipment | Original Mail | Cyber Scenery</h3>
+                <span class="coc-price">$45</span>
+                <span class="coc-tag">⚡ Instant Delivery</span>
+            </div>
+        </a>
+
+        <a href="cocaccounts/acc14.html" class="coc-card">
+            <div class="img-wrap"><img src="cocimg/account14.jpg" onerror="this.style.display='none'">TH17</div>
+            <div class="coc-card-body">
+                <h3>TH17 Maxed | 5 Sceneries | 11 Skins | Maxed Heroes | High Level Troops</h3>
+                <span class="coc-price">$79</span>
+                <span class="coc-tag">⚡ Instant Delivery</span>
+            </div>
         </a>
 
     </div>
 </div>
+
+<!-- FOOTER -->
+<footer>
+    <p>© 2026 Clasherman.com | All Rights Reserved</p>
+</footer>
+
 
 </body>
 </html>

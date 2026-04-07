@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clash Royale Accounts - Clasherman</title>
+
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="auth.js" defer></script>
+
+<style>
+/* PAGE */
+.cr-container {
+    padding: 50px 40px;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* HEADING */
+.cr-container h1 {
+    font-size: 42px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 1px;
+}
+
+.cr-container h1 span {
+    color: #38bdf8;
+}
+
+/* SUBTEXT */
+.cr-subtitle {
+    color: #94a3b8;
+    margin-top: 8px;
+    font-size: 15px;
+}
+
+/* GRID */
+.cr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+    margin-top: 35px;
+}
+
+/* CARD */
+.cr-card {
+    background: #1e293b;
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: white;
+    transition: 0.3s;
+    font-family: 'Poppins', sans-serif;
+}
+
+.cr-card:hover {
+    transform: translateY(-8px);
+    background: #263548;
+}
+
+/* IMAGE */
+.cr-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+/* CARD BODY */
+.cr-card-body {
+    padding: 12px 15px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cr-card h3 {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: #e2e8f0;
+    margin: 0;
+}
+
+.cr-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #38bdf8;
+}
+
+.cr-tag {
+    font-size: 11px;
+    color: #4ade80;
+    font-weight: 500;
+}
+
+.cr-card .img-wrap {
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(135deg, #1a0f3d, #2d1b6e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #a78bfa;
+    font-weight: 600;
+    overflow: hidden;
+}
+
+.cr-card .img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cr-card.hidden { display: none; }
+
+@media (max-width: 768px) {
+    .cr-container h1 { font-size: 28px; }
+    .cr-container { padding: 30px 20px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="logo">
+        <img src="images/logo.png" alt="Clasherman Logo">
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search accounts..." />
+        <button onclick="searchCards()">🔍</button>
+    </div>
+
+    <div class="mobile-nav">
+        <a href="index.html">Home</a>
+        <a href="https://tawk.to/chat/69d222061772311c3585e2a0/1jled9qr1" target="_blank">Contact us</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="terms.html">T&C</a>
+    </div>
+</header>
+
+<div class="cr-container">
+    <h1>Clash <span>Royale</span> Accounts</h1>
+    <p class="cr-subtitle">High trophies, max cards and rare emotes available</p>
+
+    <div class="cr-grid">
+
+        <a href="craccounts/acc1.html" class="cr-card">
+            <div class="img-wrap"><img src="crimg/account1.jpg" onerror="this.style.display='none'">Arena 27</div>
+            <div class="cr-card-body">
+                <h3>Arena 27 | Emote Collection | Champion & Legendary Badges | Evo & Max Cards</h3>
+                <span class="cr-price">$29</span>
+                <span class="cr-tag">⚡ Instant Delivery</span>
+            </div>
+        </a>
+
+        <a href="craccounts/acc2.html" class="cr-card">
+            <div class="img-wrap"><img src="crimg/account2.jpg" onerror="this.style.display='none'">Arena 29</div>
+            <div class="cr-card-body">
+                <h3>Arena 29 | Many Emotes | Evo & Max Cards | Stacked Badges</h3>
+                <span class="cr-price">$79</span>
+                <span class="cr-tag">⚡ Instant Delivery</span>
+            </div>
+        </a>
+
+        <a href="craccounts/acc3.html" class="cr-card">
+            <div class="img-wrap"><img src="crimg/account3.jpg" onerror="this.style.display='none'">Arena 24</div>
+            <div class="cr-card-body">
+                <h3>Arena 24 | Emote & Tower Collection | Cheap</h3>
+                <span class="cr-price">$25</span>
+                <span class="cr-tag">⚡ Instant Delivery</span>
+            </div>
+        </a>
+
+        <a href="craccounts/acc4.html" class="cr-card">
+            <div class="img-wrap"><img src="crimg/account4.jpg" onerror="this.style.display='none'">Arena 28</div>
+            <div class="cr-card-body">
+                <h3>Arena 28 | Rare Emote Collection | Banner & Badges | Many Max & Evo Cards</h3>
+                <span class="cr-price">$45</span>
+                <span class="cr-tag">⚡ Instant Delivery</span>
+            </div>
+        </a>
+
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <p>© 2026 Clasherman.com | All Rights Reserved</p>
+</footer>
+
+<script>
+function searchCards() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('.cr-card').forEach(card => {
+        const title = card.querySelector('h3').textContent.toLowerCase();
+        card.classList.toggle('hidden', !title.includes(query));
+    });
+}
+
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') searchCards();
+});
+</script>
+
+</body>
+</html>

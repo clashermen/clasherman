@@ -288,13 +288,19 @@ footer {
 
     /* Navbar */
     .navbar {
-        flex-direction: column;
-        text-align: center;
+        flex-wrap: wrap;
+        padding: 14px 20px;
         gap: 10px;
     }
 
+    /* Keep logo + login on the same top row */
+    .navbar .logo { order: 1; }
+    .navbar .nav-auth { order: 2; margin-left: auto; }
+    .navbar .search-container { order: 3; width: 100%; margin: 0; }
+    .navbar .mobile-nav { order: 4; width: 100%; justify-content: center; margin-top: 0; }
+
     .navbar a {
-        margin: 8px 0;
+        margin: 0;
     }
 
     .logo img {
