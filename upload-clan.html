@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/logo3.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload Clan - Clasherman</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="auth.js" defer></script>
+<style>
+.upload-page { max-width: 700px; margin: 60px auto; padding: 0 20px 60px; font-family: 'Poppins', sans-serif; }
+.upload-page h1 { font-size: 28px; font-weight: 700; color: white; margin-bottom: 6px; }
+.upload-page h1 span { background: linear-gradient(90deg,#38bdf8,#4ade80); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+.upload-page p.sub { color: #94a3b8; font-size: 14px; margin-bottom: 30px; }
+.upload-card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 28px 24px; margin-bottom: 20px; }
+.upload-card h2 { font-size: 15px; font-weight: 600; color: #38bdf8; margin-bottom: 18px; letter-spacing: 0.3px; }
+label.field-label { display: block; font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 6px; letter-spacing: 0.4px; text-transform: uppercase; }
+.upload-page input[type=text],
+.upload-page input[type=number],
+.upload-page textarea {
+    width: 100%; padding: 11px 14px; border-radius: 8px;
+    border: 1px solid #334155; background: #0f172a;
+    color: white; font-family: 'Poppins', sans-serif;
+    font-size: 14px; outline: none; box-sizing: border-box;
+    margin-bottom: 16px;
+}
+.upload-page input:focus, .upload-page textarea:focus { border-color: #38bdf8; }
+.upload-page input::placeholder, .upload-page textarea::placeholder { color: #475569; }
+.img-picker-zone {
+    border: 2px dashed #334155; border-radius: 12px;
+    padding: 20px; text-align: center; cursor: pointer;
+    transition: 0.2s; margin-bottom: 16px; position: relative;
+}
+.img-picker-zone:hover { border-color: #38bdf8; background: rgba(56,189,248,0.04); }
+.img-picker-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.img-picker-zone p { color: #64748b; font-size: 13px; margin: 0; }
+.img-picker-zone p span { color: #38bdf8; font-weight: 600; }
+.preview-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.preview-thumb { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; border: 2px solid #334155; }
+.preview-wrap { position: relative; display: inline-block; }
+.preview-wrap .remove-img {
+    position: absolute; top: -6px; right: -6px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #ef4444; color: white; border: none;
+    font-size: 10px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; font-weight: 700;
+}
+.submit-btn {
+    width: 100%; padding: 13px; border-radius: 10px; border: none;
+    background: linear-gradient(90deg, #38bdf8, #4ade80);
+    color: #0f172a; font-family: 'Poppins', sans-serif;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: opacity 0.2s; margin-top: 8px;
+}
+.submit-btn:hover { opacity: 0.88; }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.upload-msg { margin-top: 14px; font-size: 13px; text-align: center; min-height: 20px; }
+.upload-msg.error { color: #f87171; }
+.upload-msg.success { color: #4ade80; }
+.progress-bar-wrap { background: #0f172a; border-radius: 99px; height: 6px; margin-top: 12px; overflow: hidden; display: none; }
+.progress-bar { height: 100%; background: linear-gradient(90deg,#38bdf8,#4ade80); border-radius: 99px; width: 0%; transition: width 0.3s; }
+.access-denied { text-align: center; padding: 80px 20px; color: #94a3b8; font-size: 15px; }
+.access-denied a { color: #38bdf8; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">
+        <img src="images/logo.png" alt="Clasherman Logo">
+    </div>
+    <div class="mobile-nav">
+        <a href="clans.html">← Back to Clans</a>
+    </div>
+</header>
+
+<div class="upload-page" id="uploadPage" style="display:none;">
+    <h1>Upload <span>Clan</span></h1>
+    <p class="sub">Fill in the details below. Your listing will appear on the Clans page immediately after upload.</p>
+
+    <div class="upload-card">
+        <h2>Listing Info</h2>
+        <label class="field-label">Title</label>
+        <input type="text" id="listingTitle" placeholder="e.g. Clan Level 22 | Crystal 1 | Capital Level 10 | Positive War Log">
+        <label class="field-label">Price (USD)</label>
+        <input type="number" id="listingPrice" placeholder="e.g. 49" min="1">
+        <label class="field-label">Description</label>
+        <textarea id="listingDesc" placeholder="Describe the clan — level, league, capital, war log, perks, etc."></textarea>
+    </div>
+
+    <div class="upload-card">
+        <h2>Thumbnail Image <span style="color:#64748b;font-size:12px;font-weight:400;">(shown on listing card)</span></h2>
+        <div class="img-picker-zone">
+            <input type="file" id="thumbInput" accept="image/*" onchange="previewThumb(this)">
+            <p>Click to choose thumbnail — <span>1 image only</span></p>
+        </div>
+        <div id="thumbPreview"></div>
+    </div>
+
+    <div class="upload-card">
+        <h2>Gallery Images <span style="color:#64748b;font-size:12px;font-weight:400;">(up to 5)</span></h2>
+        <div class="img-picker-zone">
+            <input type="file" id="galleryInput" accept="image/*" multiple onchange="previewGallery(this)">
+            <p>Click to choose up to <span>5 images</span></p>
+        </div>
+        <div class="preview-row" id="galleryPreview"></div>
+    </div>
+
+    <div class="progress-bar-wrap" id="progressWrap">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <p class="upload-msg" id="uploadMsg"></p>
+    <button class="submit-btn" id="submitBtn" onclick="submitListing()">Upload Listing</button>
+</div>
+
+<div class="access-denied" id="accessDenied" style="display:none;">
+    <p>⛔ Seller access required.<br><a href="clans.html">← Go back</a></p>
+</div>
+
+<script>
+let thumbFile = null;
+let galleryFiles = [];
+
+function previewThumb(input) {
+    const file = input.files[0];
+    if (!file) return;
+    thumbFile = file;
+    const url = URL.createObjectURL(file);
+    document.getElementById('thumbPreview').innerHTML = `<div class="preview-wrap"><img class="preview-thumb" src="${url}"><button class="remove-img" onclick="removeThumb()">✕</button></div>`;
+}
+function removeThumb() {
+    thumbFile = null;
+    document.getElementById('thumbPreview').innerHTML = '';
+    document.getElementById('thumbInput').value = '';
+}
+
+function previewGallery(input) {
+    const files = Array.from(input.files);
+    galleryFiles.push(...files.slice(0, 5 - galleryFiles.length));
+    renderGalleryPreviews();
+}
+function renderGalleryPreviews() {
+    const wrap = document.getElementById('galleryPreview');
+    wrap.innerHTML = '';
+    galleryFiles.forEach((file, i) => {
+        const url = URL.createObjectURL(file);
+        wrap.innerHTML += `<div class="preview-wrap"><img class="preview-thumb" src="${url}"><button class="remove-img" onclick="removeGalleryImg(${i})">✕</button></div>`;
+    });
+    document.getElementById('galleryInput').value = '';
+}
+function removeGalleryImg(i) { galleryFiles.splice(i, 1); renderGalleryPreviews(); }
+
+async function uploadFile(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'clasherman_upload');
+    const res = await fetch('https://api.cloudinary.com/v1_1/devql3q5z/image/upload', {
+        method: 'POST', body: formData
+    });
+    const data = await res.json();
+    if (!data.secure_url) throw new Error(data.error?.message || 'Upload failed');
+    return data.secure_url;
+}
+
+async function submitListing() {
+    const title = document.getElementById('listingTitle').value.trim();
+    const price = document.getElementById('listingPrice').value.trim();
+    const desc  = document.getElementById('listingDesc').value.trim();
+    const msg   = document.getElementById('uploadMsg');
+    const btn   = document.getElementById('submitBtn');
+    if (!title) { msg.textContent = 'Please enter a title.'; msg.className = 'upload-msg error'; return; }
+    if (!price)  { msg.textContent = 'Please enter a price.'; msg.className = 'upload-msg error'; return; }
+    if (!thumbFile) { msg.textContent = 'Please choose a thumbnail image.'; msg.className = 'upload-msg error'; return; }
+
+    btn.disabled = true; btn.textContent = 'Uploading...'; msg.textContent = '';
+    document.getElementById('progressWrap').style.display = 'block';
+    try {
+        const total = 1 + galleryFiles.length;
+        let done = 0;
+        const setP = () => { done++; document.getElementById('progressBar').style.width = `${Math.round((done/total)*100)}%`; };
+        const thumbUrl = await uploadFile(thumbFile); setP();
+        const imageUrls = [];
+        for (const f of galleryFiles) { imageUrls.push(await uploadFile(f)); setP(); }
+        await firebase.firestore().collection('listings_clans').add({
+            title, price: Number(price), description: desc,
+            thumbnail: thumbUrl, images: imageUrls,
+            sellerUid: firebase.auth().currentUser.uid,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        msg.textContent = '✅ Listing uploaded successfully!';
+        msg.className = 'upload-msg success';
+        btn.textContent = 'Done!';
+        setTimeout(() => { window.location.href = 'clans.html'; }, 1800);
+    } catch(err) {
+        msg.textContent = 'Upload failed: ' + err.message;
+        msg.className = 'upload-msg error';
+        btn.disabled = false; btn.textContent = 'Upload Listing';
+    }
+}
+
+document.addEventListener('authStateChanged', e => {
+    const user = e.detail;
+    if (!user) { window.location.href = 'clans.html'; return; }
+    if (window.isSellerUser) {
+        document.getElementById('uploadPage').style.display = 'block';
+    } else {
+        document.getElementById('accessDenied').style.display = 'block';
+    }
+});
+</script>
+</body>
+</html>

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/logo3.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Clash of Clans Accounts - Clasherman</title>
 
@@ -11,6 +12,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="auth.js" defer></script>
+<script src="orders.js" defer></script>
+<script src="contact-us.js" defer></script>
+<script src="my-listings.js" defer></script>
 
 <style>
 /* PAGE */
@@ -145,19 +149,33 @@
 
     <div class="mobile-nav">
         <a href="index.html">Home</a>
-        <a href="https://tawk.to/chat/69d222061772311c3585e2a0/1jled9qr1" target="_blank">Contact us</a>
+        <a href="boosting.html">Boosting</a>
+        <a href="#" onclick="openMyOrders();return false;">My Orders</a>
         <a href="reviews.html">Reviews</a>
         <a href="terms.html">T&C</a>
     </div>
 </header>
 
+<style>
+.upload-listing-btn {
+    display: none; margin: 0 auto 30px; padding: 11px 28px;
+    border-radius: 10px; border: none;
+    background: linear-gradient(90deg,#38bdf8,#818cf8);
+    color: #0f172a; font-family: 'Poppins', sans-serif;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    transition: opacity 0.2s; text-decoration: none;
+}
+.upload-listing-btn:hover { opacity: 0.85; }
+</style>
+
 <div class="coc-container">
     <h1><span>Clash of Clans Accounts</span> </h1>
     <p class="coc-subtitle">Max bases, semi & rushed — TH10 to TH18 available</p>
+    <a href="upload-coc.html" class="upload-listing-btn" id="uploadCocBtn">+ Upload Account</a>
 
-    <div class="coc-grid">
+    <div class="coc-grid" id="cocGrid">
 
-        <a href="cocaccounts/acc1.html" class="coc-card">
+        <a href="listing-detail.html?type=coc&amp;title=TH18 | RC %26 Warden Max | High Equipment | 17 Skins | BH10 | 4 Digit Rank&amp;price=89&amp;img=cocimg/account1.jpg" class="coc-card">
             <div class="img-wrap"><img src="cocimg/account1.jpg" onerror="this.style.display='none'">TH18</div>
             <div class="coc-card-body">
                 <h3>TH18 | RC & Warden Max | High Equipment | 17 Skins | BH10 | 4 Digit Rank</h3>
@@ -166,7 +184,7 @@
             </div>
         </a>
 
-        <a href="cocaccounts/acc2.html" class="coc-card">
+        <a href="listing-detail.html?type=coc&amp;title=TH18 | Great Britain Local | Parimal Scenery | Max Heroes | High Equipment | BH10&amp;price=199&amp;img=cocimg/account2.jpg" class="coc-card">
             <div class="img-wrap"><img src="cocimg/account2.jpg" onerror="this.style.display='none'">TH18</div>
             <div class="coc-card-body">
                 <h3>TH18 | Great Britain Local | Parimal Scenery | Max Heroes | High Equipment | BH10</h3>
@@ -175,7 +193,7 @@
             </div>
         </a>
 
-        <a href="cocaccounts/acc3.html" class="coc-card">
+        <a href="listing-detail.html?type=coc&amp;title=TH18 | Germany Local | Legendary Skin | High Heroes | 26 Hero Skins | High Epic Equipment&amp;price=99&amp;img=cocimg/account3.jpg" class="coc-card">
             <div class="img-wrap"><img src="cocimg/account3.jpg" onerror="this.style.display='none'">TH18</div>
             <div class="coc-card-body">
                 <h3>TH18 | Germany Local | Legendary Skin | High Heroes | 26 Hero Skins | High Epic Equipment</h3>
@@ -184,7 +202,7 @@
             </div>
         </a>
 
-        <a href="cocaccounts/acc4.html" class="coc-card">
+        <a href="listing-detail.html?type=coc&amp;title=TH18 Semi Max | Builder Apprentice Max | High Heroes | High Epic Equipment&amp;price=59&amp;img=cocimg/account4.jpg" class="coc-card">
             <div class="img-wrap"><img src="cocimg/account4.jpg" onerror="this.style.display='none'">TH18</div>
             <div class="coc-card-body">
                 <h3>TH18 Semi Max | Builder Apprentice Max | High Heroes | High Epic Equipment</h3>
@@ -193,7 +211,7 @@
             </div>
         </a>
 
-        <a href="cocaccounts/acc5.html" class="coc-card">
+        <a href="listing-detail.html?type=coc&amp;title=TH17 | Donation Account | Decent Heroes | 4 Skins | Dragon Statue&amp;price=29&amp;img=cocimg/account5.jpg" class="coc-card">
             <div class="img-wrap"><img src="cocimg/account5.jpg" onerror="this.style.display='none'">TH17</div>
             <div class="coc-card-body">
                 <h3>TH17 | Donation Account | Decent Heroes | 4 Skins | Dragon Statue</h3>
@@ -202,7 +220,7 @@
             </div>
         </a>
 
-        <a href="cocaccounts/acc6.html" class="coc-card">
+        <a href="listing-detail.html?type=coc&amp;title=TH18 | All Christmas Trees | Anniversary Cake | 28 Hero Skins | 10 Epic Equipment | BH Max&amp;price=249&amp;img=cocimg/account6.jpg" class="coc-card">
             <div class="img-wrap"><img src="cocimg/account6.jpg" onerror="this.style.display='none'">TH18</div>
             <div class="coc-card-body">
                 <h3>TH18 | All Christmas Trees | Anniversary Cake | 28 Hero Skins | 10 Epic Equipment | BH Max</h3>
@@ -211,7 +229,7 @@
             </div>
         </a>
 
-        <a href="cocaccounts/acc7.html" class="coc-card">
+        <a href="listing-detail.html?type=coc&amp;title=TH16 Semi Max | High Epic Equipment | Many Obstacles %26 Decorations&amp;price=19&amp;img=cocimg/account7.jpg" class="coc-card">
             <div class="img-wrap"><img src="cocimg/account7.jpg" onerror="this.style.display='none'">TH16</div>
             <div class="coc-card-body">
                 <h3>TH16 Semi Max | High Epic Equipment | Many Obstacles & Decorations</h3>
@@ -220,7 +238,7 @@
             </div>
         </a>
 
-        <a href="cocaccounts/acc8.html" class="coc-card">
+        <a href="listing-detail.html?type=coc&amp;title=TH16 Semi Max | Clash Mania Scenery | Dragon Statue | 6 Skins | Epic Equipment&amp;price=24&amp;img=cocimg/account8.jpg" class="coc-card">
             <div class="img-wrap"><img src="cocimg/account8.jpg" onerror="this.style.display='none'">TH16</div>
             <div class="coc-card-body">
                 <h3>TH16 Semi Max | Clash Mania Scenery | Dragon Statue | 6 Skins | Epic Equipment</h3>
@@ -229,7 +247,7 @@
             </div>
         </a>
 
-        <a href="cocaccounts/acc9.html" class="coc-card">
+        <a href="listing-detail.html?type=coc&amp;title=TH16 Semi Max | 2 Beautiful Sceneries | High Level Heroes | BH10&amp;price=29&amp;img=cocimg/account9.jpg" class="coc-card">
             <div class="img-wrap"><img src="cocimg/account9.jpg" onerror="this.style.display='none'">TH16</div>
             <div class="coc-card-body">
                 <h3>TH16 Semi Max | 2 Beautiful Sceneries | High Level Heroes | BH10</h3>
@@ -238,7 +256,7 @@
             </div>
         </a>
 
-        <a href="cocaccounts/acc10.html" class="coc-card">
+        <a href="listing-detail.html?type=coc&amp;title=TH17 Semi Max | High Level Defence | Many Epic Equipment&amp;price=39&amp;img=cocimg/account10.jpg" class="coc-card">
             <div class="img-wrap"><img src="cocimg/account10.jpg" onerror="this.style.display='none'">TH17</div>
             <div class="coc-card-body">
                 <h3>TH17 Semi Max | High Level Defence | Many Epic Equipment</h3>
@@ -247,7 +265,7 @@
             </div>
         </a>
 
-        <a href="cocaccounts/acc11.html" class="coc-card">
+        <a href="listing-detail.html?type=coc&amp;title=TH18 | High Defence %26 Troops | 12 Epic Equipment | 12 Skins | Painter Scenery&amp;price=59&amp;img=cocimg/account11.jpg" class="coc-card">
             <div class="img-wrap"><img src="cocimg/account11.jpg" onerror="this.style.display='none'">TH18</div>
             <div class="coc-card-body">
                 <h3>TH18 | High Defence & Troops | 12 Epic Equipment | 12 Skins | Painter Scenery</h3>
@@ -256,7 +274,7 @@
             </div>
         </a>
 
-        <a href="cocaccounts/acc12.html" class="coc-card">
+        <a href="listing-detail.html?type=coc&amp;title=TH17 | Ghost Scenery | 10 Skins | 500 Gems Name Change | Cheap In-Game Shop&amp;price=49&amp;img=cocimg/account12.jpg" class="coc-card">
             <div class="img-wrap"><img src="cocimg/account12.jpg" onerror="this.style.display='none'">TH17</div>
             <div class="coc-card-body">
                 <h3>TH17 | Ghost Scenery | 10 Skins | 500 Gems Name Change | Cheap In-Game Shop</h3>
@@ -265,7 +283,7 @@
             </div>
         </a>
 
-        <a href="cocaccounts/acc13.html" class="coc-card">
+        <a href="listing-detail.html?type=coc&amp;title=TH16 Almost Maxed | High Equipment | Original Mail | Cyber Scenery&amp;price=45&amp;img=cocimg/account13.jpg" class="coc-card">
             <div class="img-wrap"><img src="cocimg/account13.jpg" onerror="this.style.display='none'">TH16</div>
             <div class="coc-card-body">
                 <h3>TH16 Almost Maxed | High Equipment | Original Mail | Cyber Scenery</h3>
@@ -274,7 +292,7 @@
             </div>
         </a>
 
-        <a href="cocaccounts/acc14.html" class="coc-card">
+        <a href="listing-detail.html?type=coc&amp;title=TH17 Maxed | 5 Sceneries | 11 Skins | Maxed Heroes | High Level Troops&amp;price=79&amp;img=cocimg/account14.jpg" class="coc-card">
             <div class="img-wrap"><img src="cocimg/account14.jpg" onerror="this.style.display='none'">TH17</div>
             <div class="coc-card-body">
                 <h3>TH17 Maxed | 5 Sceneries | 11 Skins | Maxed Heroes | High Level Troops</h3>
@@ -291,6 +309,40 @@
     <p>© 2026 Clasherman.com | All Rights Reserved</p>
 </footer>
 
+<script>
+let cocListenerStarted = false;
+document.addEventListener('authStateChanged', e => {
+    const btn = document.getElementById('uploadCocBtn');
+    if (btn) btn.style.display = window.isSellerUser ? 'inline-block' : 'none';
+
+    if (cocListenerStarted) return;
+    cocListenerStarted = true;
+
+    window._db.collection('listings_coc').onSnapshot(snap => {
+        const grid = document.getElementById('cocGrid');
+        document.querySelectorAll('.coc-card.dynamic').forEach(el => el.remove());
+        const sorted = snap.docs.sort((a,b) => {
+            const ta = a.data().createdAt?.toMillis?.() || 0;
+            const tb = b.data().createdAt?.toMillis?.() || 0;
+            return tb - ta;
+        });
+        sorted.reverse().forEach(doc => {
+            const d = doc.data();
+            const card = document.createElement('a');
+            card.href = `listing-detail.html?id=${doc.id}&type=coc`;
+            card.className = 'coc-card dynamic';
+            card.innerHTML = `
+                <div class="img-wrap"><img src="${d.thumbnail}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+                <div class="coc-card-body">
+                    <h3>${d.title}</h3>
+                    <span class="coc-price">$${d.price}</span>
+                    <span class="coc-tag">⚡ Instant Delivery</span>
+                </div>`;
+            grid.insertBefore(card, grid.firstChild);
+        });
+    });
+});
+</script>
 
 </body>
 </html>

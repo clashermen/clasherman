@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/logo3.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reviews - Clasherman</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -10,6 +11,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="auth.js" defer></script>
+<script src="orders.js" defer></script>
+<script src="contact-us.js" defer></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -262,7 +265,8 @@ body {
     </div>
     <div class="mobile-nav">
         <a href="index.html">Home</a>
-        <a href="https://tawk.to/chat/69d222061772311c3585e2a0/1jled9qr1" target="_blank">Contact us</a>
+        <a href="boosting.html">Boosting</a>
+        <a href="#" onclick="openMyOrders();return false;">My Orders</a>
         <a href="reviews.html">Reviews</a>
         <a href="terms.html">T&C</a>
     </div>

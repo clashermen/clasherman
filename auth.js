@@ -79,6 +79,13 @@
     .auth-success { color:#4ade80; font-size:13px; margin:-6px 0 10px; min-height:16px; font-family:'Poppins',sans-serif; }
     .forgot-link { text-align:center; margin-top:12px; font-size:13px; color:#38bdf8; cursor:pointer; font-family:'Poppins',sans-serif; }
     .forgot-link:hover { text-decoration:underline; }
+    .auth-label { display:block; font-size:11px; font-weight:600; color:#64748b; margin-bottom:4px; letter-spacing:0.4px; text-transform:uppercase; font-family:'Poppins',sans-serif; }
+    .auth-pass-wrap { position:relative; margin-bottom:12px; }
+    .auth-pass-wrap input { margin-bottom:0; padding-right:42px; }
+    .auth-eye { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:15px; opacity:0.5; transition:opacity 0.15s; padding:0; line-height:1; }
+    .auth-eye:hover { opacity:1; }
+    .auth-terms { display:flex; align-items:center; gap:8px; font-size:12px; color:#64748b; margin:12px 0 4px; white-space:nowrap; font-family:'Poppins',sans-serif; }
+    .auth-terms input[type="checkbox"] { width:15px; height:15px; flex-shrink:0; accent-color:#38bdf8; cursor:pointer; margin:0; padding:0; }
     @media(max-width:768px){
         .navbar .nav-auth { order:2; margin-left:auto; }
     }
@@ -97,19 +104,47 @@
             </div>
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <p class="auth-title">Welcome back</p>
-                <input type="email"    id="loginEmail" placeholder="Email"    required>
-                <input type="password" id="loginPass"  placeholder="Password" required>
+                <label class="auth-label">Email Address</label>
+                <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                <label class="auth-label">Password</label>
+                <div class="auth-pass-wrap">
+                    <input type="password" id="loginPass" placeholder="Enter your password" required>
+                    <button type="button" class="auth-eye" onclick="togglePass('loginPass',this)"><img src="images/eye.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;"></button>
+                </div>
                 <p id="loginError" class="auth-error"></p>
                 <button type="submit" class="auth-submit">Login</button>
                 <p class="forgot-link" onclick="switchTab('forgot')">Forgot password?</p>
             </form>
             <form id="signupForm" style="display:none;" onsubmit="handleSignup(event)">
                 <p class="auth-title">Create account</p>
-                <input type="text"     id="signupName"    placeholder="Username"               required>
-                <input type="email"    id="signupEmail"   placeholder="Email"                  required>
-                <input type="password" id="signupPass"    placeholder="Password (min 6 chars)"  minlength="6" required>
-                <input type="password" id="signupConfirm" placeholder="Confirm password"        minlength="6" required>
+                <div style="display:flex;gap:10px;">
+                    <div style="flex:1;">
+                        <label class="auth-label">First Name</label>
+                        <input type="text" id="signupFirst" placeholder="First name" required>
+                    </div>
+                    <div style="flex:1;">
+                        <label class="auth-label">Last Name</label>
+                        <input type="text" id="signupLast" placeholder="Last name" required>
+                    </div>
+                </div>
+                <label class="auth-label">Email Address</label>
+                <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                <label class="auth-label">Password</label>
+                <div class="auth-pass-wrap">
+                    <input type="password" id="signupPass" placeholder="Min 6 characters" minlength="6" required>
+                    <button type="button" class="auth-eye" onclick="togglePass('signupPass',this)"><img src="images/eye.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;"></button>
+                </div>
+                <label class="auth-label">Confirm Password</label>
+                <div class="auth-pass-wrap">
+                    <input type="password" id="signupConfirm" placeholder="Repeat your password" minlength="6" required>
+                    <button type="button" class="auth-eye" onclick="togglePass('signupConfirm',this)"><img src="images/eye.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;"></button>
+                </div>
+                <label class="auth-terms">
+                    <input type="checkbox" id="signupTerms">
+                    I agree to Clasherman's <a href="terms.html" target="_blank" style="color:#38bdf8;">Terms and Conditions</a>
+                </label>
                 <p id="signupError" class="auth-error"></p>
+                <p id="signupSuccess" class="auth-success" style="font-size:14px;"></p>
                 <button type="submit" class="auth-submit">Sign Up</button>
             </form>
             <div id="forgotForm" style="display:none;">
@@ -132,8 +167,10 @@
         const slot = document.createElement('div');
         slot.className = 'nav-auth';
         slot.innerHTML = `
-            <span id="authBtn" onclick="openAuth()" class="nav-login-btn">🔐 Login</span>
+            <span id="authBtn" onclick="openAuth()" class="nav-login-btn"><img src="images/login.png" style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:6px;"> Login</span>
             <span id="userGreeting" style="display:none;" class="mobile-nav-user">
+                <a id="adminPanelBtn" href="admin.html" style="display:none;padding:6px 14px;border-radius:8px;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#0f172a;font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;">🛡️ Admin Panel</a>
+                <a id="manageListingsBtn" href="manage-listings.html" style="display:none;padding:6px 14px;border-radius:8px;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:white;font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;">📋 Listings</a>
                 <img id="userAvatar" src="" style="width:32px;height:32px;border-radius:50%;border:2px solid #38bdf8;object-fit:cover;background:#1e293b;">
                 <span id="userNameDisplay"></span>
                 <span onclick="logout()" class="mobile-nav-logout">Logout</span>
@@ -157,6 +194,18 @@
         return { browser, os, device: /Mobi|Android/i.test(ua) ? 'Mobile' : 'Desktop', screenRes: `${screen.width}x${screen.height}` };
     }
 
+    // ── Username generator ────────────────────────────
+    function generateUsername() {
+        const adj = ['Gold','Dark','Iron','Royal','Swift','Stone','Frost','Blaze','Storm','Night',
+                     'Steel','Shadow','Crimson','Ancient','Savage','Mighty','Hyper','Titan','Brave','Epic'];
+        const noun= ['Raider','Warden','Archer','Barb','Queen','Dragon','Knight','Shield','Wizard','Goblin',
+                     'Titan','Warrior','Basher','Crusher','Hunter','Slayer','Guard','Ranger','Mage','Troll'];
+        const a   = adj [Math.floor(Math.random() * adj.length)];
+        const n   = noun[Math.floor(Math.random() * noun.length)];
+        const num = Math.floor(1000 + Math.random() * 9000);
+        return `${a}${n}#${num}`;
+    }
+
     function friendlyError(code) {
         const map = {
             'auth/email-already-in-use': 'This email is already registered.',
@@ -171,6 +220,12 @@
     }
 
     // ── Global auth functions ─────────────────────────
+    window.togglePass = (id, btn) => {
+        const input = document.getElementById(id);
+        if (input.type === 'password') { input.type = 'text'; btn.style.opacity = '1'; }
+        else { input.type = 'password'; btn.style.opacity = '0.5'; }
+    };
+
     window.openAuth  = () => document.getElementById('authModal').classList.add('open');
     window.closeAuth = () => document.getElementById('authModal').classList.remove('open');
     window.logout    = () => window._auth.signOut();
@@ -208,33 +263,33 @@
 
     window.handleSignup = async (e) => {
         e.preventDefault();
-        const name    = document.getElementById('signupName').value.trim();
+        const firstName = document.getElementById('signupFirst').value.trim();
+        const lastName  = document.getElementById('signupLast').value.trim();
         const email   = document.getElementById('signupEmail').value.trim();
         const pass    = document.getElementById('signupPass').value;
         const confirm = document.getElementById('signupConfirm').value;
         const errEl   = document.getElementById('signupError');
+        const succEl  = document.getElementById('signupSuccess');
         const btn     = e.target.querySelector('button[type=submit]');
 
+        if (!firstName || !lastName) { errEl.textContent = 'Please enter your first and last name.'; return; }
         if (pass !== confirm) { errEl.textContent = 'Passwords do not match.'; return; }
+        if (!document.getElementById('signupTerms').checked) { errEl.textContent = 'You must agree to the Terms and Conditions.'; return; }
 
         btn.disabled = true; btn.textContent = 'Creating...';
+        errEl.textContent = ''; succEl.textContent = '';
         let cred = null;
         try {
-            // Create auth account first so we are authenticated for Firestore reads
             cred = await window._auth.createUserWithEmailAndPassword(email, pass);
 
-            // Now check username uniqueness while authenticated
-            const nameCheck = await window._db.collection('users')
-                .where('nameLower', '==', name.toLowerCase())
-                .limit(1)
-                .get();
-
-            if (!nameCheck.empty) {
-                await cred.user.delete();
-                errEl.textContent = 'Username already taken. Please choose another.';
-                btn.disabled = false; btn.textContent = 'Sign Up';
-                return;
-            }
+            // Generate a unique username — retry if collision (extremely rare)
+            let name, nameCheck;
+            do {
+                name      = generateUsername();
+                nameCheck = await window._db.collection('users')
+                    .where('nameLower', '==', name.toLowerCase())
+                    .limit(1).get();
+            } while (!nameCheck.empty);
 
             // Generate a permanent random avatar
             const avatarStyles = ['adventurer','avataaars','big-ears','bottts','fun-emoji','lorelei','micah','personas','pixel-art'];
@@ -244,19 +299,23 @@
 
             await cred.user.updateProfile({ displayName: name, photoURL: avatarUrl });
             await window._db.collection('users').doc(cred.user.uid).set({
-                name, nameLower: name.toLowerCase(), email, avatarUrl,
+                name, nameLower: name.toLowerCase(), firstName, lastName, email, avatarUrl,
                 joinedAt:   firebase.firestore.FieldValue.serverTimestamp(),
                 lastLogin:  firebase.firestore.FieldValue.serverTimestamp(),
                 loginCount: 1,
                 ...getDeviceInfo()
             });
-            window.closeAuth();
+
+            // Show the assigned username before closing
+            succEl.textContent = `✅ Your username: ${name}`;
+            btn.textContent = 'Done!';
+            setTimeout(() => window.closeAuth(), 2200);
+
         } catch(err) {
-            // Clean up auth account if anything went wrong after creation
             if (cred) await cred.user.delete().catch(() => {});
             errEl.textContent = friendlyError(err.code);
+            btn.disabled = false; btn.textContent = 'Sign Up';
         }
-        btn.disabled = false; btn.textContent = 'Sign Up';
     };
 
     window.handleForgot = async () => {
@@ -272,19 +331,61 @@
         } catch(err) { errEl.textContent = friendlyError(err.code); }
     };
 
-    // ── Auth state ────────────────────────────────────
+    // ── Auth state ───────────────────────────────
+    const ADMIN_UID   = 'lHS5QzbqMOh6EExZD8ebcPPReh82';
+    const SELLER_UIDS = ['dHWJDovWGzQtF8potZInNHpsNg53']; // paste seller Firebase UID here
+
+    window.isSellerUser = false;
+
+    let _userDocUnsub = null; // real-time listener for the logged-in user's own doc
+
     window._auth.onAuthStateChanged(user => {
-        const btn      = document.getElementById('authBtn');
-        const greeting = document.getElementById('userGreeting');
-        const nameEl   = document.getElementById('userNameDisplay');
-        const avatarEl = document.getElementById('userAvatar');
-        if (btn)      btn.style.display      = user ? 'none' : '';
-        if (greeting) greeting.style.display = user ? 'flex' : 'none';
+        // Cancel any previous listener
+        if (_userDocUnsub) { _userDocUnsub(); _userDocUnsub = null; }
+
+        const btn       = document.getElementById('authBtn');
+        const greeting  = document.getElementById('userGreeting');
+        const nameEl    = document.getElementById('userNameDisplay');
+        const avatarEl  = document.getElementById('userAvatar');
+        const adminBtn  = document.getElementById('adminPanelBtn');
+        const manageBtn = document.getElementById('manageListingsBtn');
+
         if (user) {
-            if (nameEl)   nameEl.textContent = user.displayName || user.email;
+            window.isSellerUser = SELLER_UIDS.includes(user.uid);
+            if (btn)      btn.style.display      = 'none';
+            if (greeting) greeting.style.display = 'flex';
             if (avatarEl) avatarEl.src = user.photoURL || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${user.uid}`;
+            const isAdmin = user.uid === ADMIN_UID;
+            if (adminBtn)  adminBtn.style.display  = isAdmin ? '' : 'none';
+            if (manageBtn) manageBtn.style.display = isAdmin ? '' : 'none';
+
+            // Real-time listener — fires immediately and on every change
+            _userDocUnsub = window._db.collection('users').doc(user.uid).onSnapshot(doc => {
+                if (!doc.exists) return;
+                const data = doc.data();
+
+                // If admin disabled this account, sign out immediately
+                if (data.disabled) {
+                    window._auth.signOut();
+                    return;
+                }
+
+                // Keep display name in sync with Firestore
+                if (nameEl) nameEl.textContent = data.name || user.displayName || user.email;
+            }, () => {
+                // On error fall back to Auth displayName
+                if (nameEl) nameEl.textContent = user.displayName || user.email;
+            });
+
+            document.dispatchEvent(new CustomEvent('authStateChanged', { detail: user }));
+        } else {
+            window.isSellerUser = false;
+            if (btn)      btn.style.display      = '';
+            if (greeting) greeting.style.display = 'none';
+            if (adminBtn)  adminBtn.style.display  = 'none';
+            if (manageBtn) manageBtn.style.display = 'none';
+            document.dispatchEvent(new CustomEvent('authStateChanged', { detail: null }));
         }
-        document.dispatchEvent(new CustomEvent('authStateChanged', { detail: user }));
     });
 
     // close modal on outside click

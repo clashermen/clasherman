@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/logo3.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Clans - Clasherman</title>
 
@@ -11,6 +12,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="auth.js" defer></script>
+<script src="orders.js" defer></script>
+<script src="contact-us.js" defer></script>
+<script src="my-listings.js" defer></script>
 
 <style>
 /* PAGE */
@@ -63,23 +67,54 @@
     background: #263548;
 }
 
-/* IMAGE */
-.clan-card img {
+/* IMAGE WRAP */
+.clan-card .img-wrap {
     width: 100%;
-    height: 150px;
-    object-fit: cover;
+    background: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
-/* TITLE */
+.clan-card .img-wrap img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+
+/* CARD BODY */
+.clan-card-body {
+    padding: 12px 15px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .clan-card h3 {
-    padding: 15px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: #e2e8f0;
+    margin: 0;
+}
+
+/* PRICE BADGE */
+.clan-price {
     font-size: 16px;
+    font-weight: 700;
+    color: #38bdf8;
+}
+
+/* DELIVERY TAG */
+.clan-tag {
+    font-size: 11px;
+    color: #4ade80;
     font-weight: 500;
 }
 
-.clan-card.hidden {
-    display: none;
-}
+.clan-card.hidden { display: none; }
 
 @media (max-width: 768px) {
     .clan-container h1 { font-size: 28px; }
@@ -103,56 +138,66 @@
 
     <div class="mobile-nav">
         <a href="index.html">Home</a>
-        <a href="https://tawk.to/chat/69d222061772311c3585e2a0/1jled9qr1" target="_blank">Contact us</a>
+        <a href="boosting.html">Boosting</a>
+        <a href="#" onclick="openMyOrders();return false;">My Orders</a>
         <a href="reviews.html">Reviews</a>
         <a href="terms.html">T&C</a>
     </div>
 </header>
 
+<style>
+.upload-listing-btn {
+    display: none; margin: 0 auto 30px; padding: 11px 28px;
+    border-radius: 10px; border: none;
+    background: linear-gradient(90deg,#38bdf8,#4ade80);
+    color: #0f172a; font-family: 'Poppins', sans-serif;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    transition: opacity 0.2s; text-decoration: none;
+}
+.upload-listing-btn:hover { opacity: 0.85; }
+</style>
+
 <div class="clan-container">
     <h1><span>Clans</span></h1>
-    <p class="clan-subtitle">Top-tier clans — Level 10–40, High Leagues, Name changeable</p>
+    <p class="clan-subtitle">Top-tier clans — High League, Capital Maxed, Positive War Log</p>
+    <a href="upload-clan.html" class="upload-listing-btn" id="uploadClanBtn">+ Upload Clan</a>
 
-    <div class="clan-grid">
+    <div class="clan-grid" id="clanGrid">
 
-        <a href="clans/clan1.html" class="clan-card">
-            <img src="clanimg/clan1.jpg">
-            <h3>War Legends</h3>
+        <a href="listing-detail.html?type=clans&amp;title=Clan Level 16 | %22Let%27s Go%22 | Master 2 League | English Name | Positive War Log&amp;price=29&amp;img=clanimg/clan1.jpg" class="clan-card">
+            <div class="img-wrap"><img src="clanimg/clan1.jpg"></div>
+            <div class="clan-card-body">
+                <h3>Clan Level 16 | "Let's Go" | Master 2 League | English Name | Positive War Log</h3>
+                <span class="clan-price">$29</span>
+                <span class="clan-tag">⚡ Instant Delivery</span>
+            </div>
         </a>
 
-        <a href="clans/clan2.html" class="clan-card">
-            <img src="clanimg/clan2.jpg">
-            <h3>Elite Warriors</h3>
+        <a href="listing-detail.html?type=clans&amp;title=Clan Level 29 | INTERNACIONALES | Maxed Clan Capital | Crystal 2 | Positive War Log&amp;price=79&amp;img=clanimg/clan2.JPG" class="clan-card">
+            <div class="img-wrap"><img src="clanimg/clan2.JPG"></div>
+            <div class="clan-card-body">
+                <h3>Clan Level 29 | INTERNACIONALES | Maxed Clan Capital | Crystal 2 | Positive War Log</h3>
+                <span class="clan-price">$79</span>
+                <span class="clan-tag">⚡ Instant Delivery</span>
+            </div>
         </a>
 
-        <a href="clans/clan2.html" class="clan-card">
-            <img src="clanimg/clan2.jpg">
-            <h3>Elite Warriors</h3>
+        <a href="listing-detail.html?type=clans&amp;title=Clan Level 22 | %22As One%22 | Crystal 1 | Capital Level 10 | Positive War Log&amp;price=49&amp;img=clanimg/clan3.JPG" class="clan-card">
+            <div class="img-wrap"><img src="clanimg/clan3.JPG"></div>
+            <div class="clan-card-body">
+                <h3>Clan Level 22 | "As One" | Crystal 1 | Capital Level 10 | Positive War Log</h3>
+                <span class="clan-price">$49</span>
+                <span class="clan-tag">⚡ Instant Delivery</span>
+            </div>
         </a>
 
-        <a href="clans/clan2.html" class="clan-card">
-            <img src="clanimg/clan2.jpg">
-            <h3>Elite Warriors</h3>
-        </a>
-
-        <a href="clans/clan2.html" class="clan-card">
-            <img src="clanimg/clan2.jpg">
-            <h3>Elite Warriors</h3>
-        </a>
-
-        <a href="clans/clan2.html" class="clan-card">
-            <img src="clanimg/clan2.jpg">
-            <h3>Elite Warriors</h3>
-        </a>
-
-        <a href="clans/clan2.html" class="clan-card">
-            <img src="clanimg/clan2.jpg">
-            <h3>Elite Warriors</h3>
-        </a>
-
-        <a href="clans/clan2.html" class="clan-card">
-            <img src="clanimg/clan2.jpg">
-            <h3>Elite Warriors</h3>
+        <a href="listing-detail.html?type=clans&amp;title=Clan Level 20 | ARMY OF CYRUS | Master League 3 | Capital Level 10 | Positive War Log&amp;price=49&amp;img=clanimg/clan4.jpg" class="clan-card">
+            <div class="img-wrap"><img src="clanimg/clan4.jpg"></div>
+            <div class="clan-card-body">
+                <h3>Clan Level 20 | ARMY OF CYRUS | Master League 3 | Capital Level 10 | Positive War Log</h3>
+                <span class="clan-price">$49</span>
+                <span class="clan-tag">⚡ Instant Delivery</span>
+            </div>
         </a>
 
     </div>
@@ -162,6 +207,41 @@
 <footer>
     <p>© 2026 Clasherman.com | All Rights Reserved</p>
 </footer>
+
+<script>
+let clansListenerStarted = false;
+document.addEventListener('authStateChanged', e => {
+    const btn = document.getElementById('uploadClanBtn');
+    if (btn) btn.style.display = window.isSellerUser ? 'inline-block' : 'none';
+
+    if (clansListenerStarted) return;
+    clansListenerStarted = true;
+
+    window._db.collection('listings_clans').onSnapshot(snap => {
+        const grid = document.getElementById('clanGrid');
+        document.querySelectorAll('.clan-card.dynamic').forEach(el => el.remove());
+        const sorted = snap.docs.sort((a,b) => {
+            const ta = a.data().createdAt?.toMillis?.() || 0;
+            const tb = b.data().createdAt?.toMillis?.() || 0;
+            return tb - ta;
+        });
+        sorted.reverse().forEach(doc => {
+            const d = doc.data();
+            const card = document.createElement('a');
+            card.href = `listing-detail.html?id=${doc.id}&type=clans`;
+            card.className = 'clan-card dynamic';
+            card.innerHTML = `
+                <div class="img-wrap"><img src="${d.thumbnail}" style="width:100%;height:auto;display:block;object-fit:contain;"></div>
+                <div class="clan-card-body">
+                    <h3>${d.title}</h3>
+                    <span class="clan-price">$${d.price}</span>
+                    <span class="clan-tag">⚡ Instant Delivery</span>
+                </div>`;
+            grid.insertBefore(card, grid.firstChild);
+        });
+    });
+});
+</script>
 
 </body>
 </html>

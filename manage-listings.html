@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/logo3.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Listings - Clasherman Admin</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="auth.js" defer></script>
+<style>
+.manage-page { max-width: 1000px; margin: 50px auto; padding: 0 20px 80px; font-family: 'Poppins', sans-serif; }
+.manage-page h1 { font-size: 28px; font-weight: 700; color: white; margin-bottom: 6px; }
+.manage-page h1 span { background: linear-gradient(90deg,#f59e0b,#ef4444); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+.manage-page p.sub { color: #94a3b8; font-size: 14px; margin-bottom: 28px; }
+
+.m-tabs { display:flex; gap:8px; margin-bottom:24px; }
+.m-tab {
+    padding: 9px 22px; border-radius: 10px; border: none;
+    background: #1e293b; color: #64748b;
+    font-family: 'Poppins', sans-serif; font-size: 13px;
+    font-weight: 600; cursor: pointer; transition: 0.2s;
+}
+.m-tab.active { background: linear-gradient(90deg,#f59e0b,#ef4444); color: #0f172a; }
+
+.m-count { font-size: 12px; color: #64748b; margin-bottom: 16px; }
+
+.listing-card {
+    background: #1e293b; border: 1px solid #334155;
+    border-radius: 14px; padding: 16px 18px;
+    margin-bottom: 12px; display: flex;
+    align-items: flex-start; gap: 16px;
+}
+.listing-thumb {
+    width: 72px; height: 72px; border-radius: 10px;
+    object-fit: cover; background: #0f172a;
+    flex-shrink: 0; border: 1px solid #334155;
+}
+.listing-info { flex: 1; min-width: 0; }
+.listing-title { font-size: 14px; font-weight: 600; color: #e2e8f0; margin-bottom: 4px; line-height: 1.4; }
+.listing-price { font-size: 15px; font-weight: 700; color: #38bdf8; margin-bottom: 8px; }
+.listing-meta { display: flex; flex-wrap: wrap; gap: 10px; }
+.meta-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; color: #64748b;
+    background: #0f172a; border: 1px solid #1e293b;
+    border-radius: 8px; padding: 4px 10px;
+}
+.meta-item strong { color: #94a3b8; }
+.meta-item img { width: 14px; height: 14px; object-fit: contain; border-radius: 50%; }
+.listing-actions { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+.m-edit-btn, .m-del-btn {
+    padding: 7px 18px; border-radius: 8px; border: none;
+    font-family: 'Poppins', sans-serif; font-size: 12px;
+    font-weight: 600; cursor: pointer; transition: 0.2s;
+    white-space: nowrap;
+}
+.m-edit-btn { background: #1e40af; color: white; }
+.m-edit-btn:hover { background: #1d4ed8; }
+.m-del-btn { background: #7f1d1d; color: #fca5a5; }
+.m-del-btn:hover { background: #991b1b; }
+.type-tag {
+    display: inline-block; font-size: 10px; font-weight: 600;
+    padding: 2px 9px; border-radius: 20px; margin-bottom: 6px;
+}
+.tag-coc   { background: rgba(56,189,248,0.12); color: #38bdf8; }
+.tag-cr    { background: rgba(167,139,250,0.12); color: #a78bfa; }
+.tag-clans { background: rgba(74,222,128,0.12);  color: #4ade80; }
+
+.empty-state { text-align: center; padding: 60px; color: #475569; font-size: 14px; }
+.loading-state { text-align: center; padding: 80px; color: #94a3b8; font-size: 15px; }
+.access-denied { text-align: center; padding: 80px 20px; color: #94a3b8; font-size: 15px; }
+.access-denied a { color: #38bdf8; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">
+        <img src="images/logo.png" alt="Clasherman Logo">
+    </div>
+    <div class="mobile-nav">
+        <a href="admin.html">← Admin Panel</a>
+    </div>
+</header>
+
+<div id="loadingState" class="loading-state">Checking access...</div>
+<div id="accessDenied" class="access-denied" style="display:none;">
+    <p><img src="images/shield.png" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;margin-right:6px;opacity:0.7;">Admin access required.<br><a href="index.html">← Go home</a></p>
+</div>
+
+<div class="manage-page" id="managePage" style="display:none;">
+    <h1><img src="images/shield.png" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;margin-right:8px;"> <span>Manage Listings</span></h1>
+    <p class="sub">View, edit, or delete any listing. Seller details shown below each listing.</p>
+
+    <div class="m-tabs">
+        <button class="m-tab active" onclick="mTab('coc', this)">CoC Accounts</button>
+        <button class="m-tab" onclick="mTab('cr', this)">CR Accounts</button>
+        <button class="m-tab" onclick="mTab('clans', this)">Clans</button>
+    </div>
+
+    <div class="m-count" id="listingCount"></div>
+    <div id="listingsContainer"></div>
+</div>
+
+<script>
+const ADMIN_UID = 'lHS5QzbqMOh6EExZD8ebcPPReh82';
+
+const COLS = {
+    coc:   { collection: 'listings_coc',   label: 'CoC Account', tagClass: 'tag-coc' },
+    cr:    { collection: 'listings_cr',    label: 'CR Account',  tagClass: 'tag-cr' },
+    clans: { collection: 'listings_clans', label: 'Clan',        tagClass: 'tag-clans' }
+};
+
+let currentTab = 'coc';
+
+// Cache seller info to avoid redundant Firestore reads
+const sellerCache = {};
+
+async function getSellerInfo(uid) {
+    if (sellerCache[uid]) return sellerCache[uid];
+    try {
+        const doc = await window._db.collection('users').doc(uid).get();
+        const info = doc.exists ? doc.data() : {};
+        sellerCache[uid] = info;
+        return info;
+    } catch { return {}; }
+}
+
+function formatDate(ts) {
+    if (!ts) return 'Unknown';
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+async function loadListings(type) {
+    const container = document.getElementById('listingsContainer');
+    const countEl   = document.getElementById('listingCount');
+    container.innerHTML = '<p class="loading-state" style="padding:40px;">Loading...</p>';
+    countEl.textContent = '';
+
+    try {
+        const snap = await window._db.collection(COLS[type].collection).get();
+        if (snap.empty) {
+            container.innerHTML = '<div class="empty-state">No listings found.</div>';
+            countEl.textContent = '0 listings';
+            return;
+        }
+
+        const docs = snap.docs.sort((a, b) => {
+            const ta = a.data().createdAt?.toMillis?.() || 0;
+            const tb = b.data().createdAt?.toMillis?.() || 0;
+            return tb - ta;
+        });
+
+        countEl.textContent = `${docs.length} listing${docs.length !== 1 ? 's' : ''}`;
+        container.innerHTML = '';
+
+        for (const doc of docs) {
+            const d = doc.data();
+            const seller = await getSellerInfo(d.sellerUid || '');
+
+            const card = document.createElement('div');
+            card.className = 'listing-card';
+            card.innerHTML = `
+                <img class="listing-thumb" src="${d.thumbnail || ''}" onerror="this.style.opacity='0.2'">
+                <div class="listing-info">
+                    <span class="type-tag ${COLS[type].tagClass}">${COLS[type].label}</span>
+                    <div class="listing-title">${d.title}</div>
+                    <div class="listing-price">$${d.price}</div>
+                    <div class="listing-meta">
+                        <div class="meta-item">
+                            <img src="${seller.avatarUrl || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${d.sellerUid}`}" alt="avatar">
+                            <strong>${seller.name || 'Unknown'}</strong>
+                        </div>
+                        <div class="meta-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> <strong>${seller.email || d.sellerUid || '—'}</strong>
+                        </div>
+                        <div class="meta-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> <strong>${formatDate(d.createdAt)}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="listing-actions">
+                    <button class="m-edit-btn" onclick="window.location.href='edit-listing.html?id=${doc.id}&type=${type}'"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
+                    <button class="m-del-btn" onclick="deleteListing('${doc.id}','${type}', this)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Delete</button>
+                </div>`;
+            container.appendChild(card);
+        }
+    } catch(err) {
+        container.innerHTML = `<div class="empty-state">Error loading listings: ${err.message}</div>`;
+    }
+}
+
+window.mTab = function(type, btn) {
+    currentTab = type;
+    document.querySelectorAll('.m-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    loadListings(type);
+};
+
+window.deleteListing = async function(id, type, btn) {
+    if (!confirm('Delete this listing permanently?')) return;
+    btn.disabled = true; btn.textContent = 'Deleting...';
+    try {
+        await window._db.collection(COLS[type].collection).doc(id).delete();
+        btn.closest('.listing-card').remove();
+        const countEl = document.getElementById('listingCount');
+        const current = parseInt(countEl.textContent) - 1;
+        countEl.textContent = `${current} listing${current !== 1 ? 's' : ''}`;
+    } catch(err) {
+        alert('Delete failed: ' + err.message);
+        btn.disabled = false; btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Delete';
+    }
+};
+
+// Edit is allowed for admin regardless of sellerUid — override check in edit-listing.html
+// We pass &admin=1 so edit-listing.html skips the ownership check
+document.querySelectorAll('.m-edit-btn').forEach(btn => {
+    const href = btn.getAttribute('onclick');
+    if (href) btn.setAttribute('onclick', href.replace("'edit-listing.html?", "'edit-listing.html?admin=1&"));
+});
+
+document.addEventListener('authStateChanged', e => {
+    const user = e.detail;
+    document.getElementById('loadingState').style.display = 'none';
+    if (!user || user.uid !== ADMIN_UID) {
+        document.getElementById('accessDenied').style.display = 'block';
+        return;
+    }
+    document.getElementById('managePage').style.display = 'block';
+    loadListings('coc');
+});
+</script>
+</body>
+</html>

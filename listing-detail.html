@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/logo3.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listing - Clasherman</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="auth.js" defer></script>
+<script src="orders.js" defer></script>
+<script src="contact-us.js" defer></script>
+<script src="my-listings.js" defer></script>
+<style>
+* { box-sizing: border-box; }
+.detail-wrap {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px 80px;
+    font-family: 'Poppins', sans-serif;
+}
+.back-link {
+    color: #94a3b8; text-decoration: none;
+    font-size: 13px; display: inline-flex;
+    align-items: center; gap: 6px; margin-bottom: 20px;
+    transition: color 0.2s;
+}
+.back-link:hover { color: #38bdf8; }
+
+/* Title */
+.detail-title {
+    font-size: 20px; font-weight: 700;
+    color: white; line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+/* Layout: image left, info right on desktop */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 28px;
+    align-items: start;
+}
+@media (max-width: 768px) {
+    .detail-grid { grid-template-columns: 1fr; }
+}
+
+/* Images */
+.detail-images {}
+.main-img {
+    width: 100%; border-radius: 14px;
+    object-fit: cover; max-height: 380px;
+    background: #1e293b; display: block;
+}
+.gallery-row {
+    display: flex; gap: 8px;
+    margin-top: 10px; flex-wrap: wrap;
+}
+.gallery-thumb {
+    width: 72px; height: 72px; object-fit: cover;
+    border-radius: 8px; border: 2px solid #334155;
+    cursor: pointer; transition: border-color 0.2s;
+}
+.gallery-thumb:hover, .gallery-thumb.active { border-color: #38bdf8; }
+
+/* Info panel */
+.detail-info {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 24px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.detail-price {
+    font-size: 32px; font-weight: 700;
+    color: #38bdf8; line-height: 1;
+}
+.detail-badges {
+    display: flex; flex-wrap: wrap; gap: 8px;
+}
+.badge {
+    font-size: 11px; font-weight: 600;
+    padding: 5px 12px; border-radius: 20px;
+    display: inline-flex; align-items: center; gap: 5px;
+}
+.badge-green  { background: rgba(74,222,128,0.12); color: #4ade80; }
+.badge-blue   { background: rgba(56,189,248,0.12); color: #38bdf8; }
+.badge-purple { background: rgba(167,139,250,0.12); color: #a78bfa; }
+.order-btn {
+    display: block; width: 100%; padding: 14px;
+    border-radius: 12px; border: none;
+    background: linear-gradient(90deg, #38bdf8, #818cf8);
+    color: #0f172a; font-family: 'Poppins', sans-serif;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: opacity 0.2s;
+}
+.order-btn:hover { opacity: 0.88; }
+
+/* ── Payment method modal ── */
+.pay-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75); z-index: 9000;
+    justify-content: center; align-items: center;
+    padding: 20px;
+}
+.pay-overlay.open { display: flex; }
+.pay-box {
+    background: #0f172a; border: 1px solid #1e293b;
+    border-radius: 20px; padding: 32px 28px;
+    width: 100%; max-width: 420px;
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+}
+.pay-close {
+    position: absolute; top: 14px; right: 16px;
+    background: none; border: none; color: #64748b;
+    font-size: 18px; cursor: pointer; line-height: 1;
+    transition: color 0.15s;
+}
+.pay-close:hover { color: white; }
+.pay-title {
+    font-size: 18px; font-weight: 700; color: white;
+    margin-bottom: 6px;
+}
+.pay-subtitle {
+    font-size: 13px; color: #64748b; margin-bottom: 24px;
+}
+.pay-methods {
+    display: flex; flex-direction: column; gap: 12px;
+}
+.pay-method-btn {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 20px; border-radius: 14px;
+    border: 1px solid #1e293b; background: #1e293b;
+    cursor: pointer; transition: 0.2s; text-align: left;
+    width: 100%;
+}
+.pay-method-btn:hover {
+    border-color: #38bdf8;
+    background: #162032;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(56,189,248,0.12);
+}
+.pay-method-btn img {
+    width: 48px; height: 48px; object-fit: contain;
+    border-radius: 10px; flex-shrink: 0;
+}
+.pay-method-info { flex: 1; }
+.pay-method-name {
+    font-size: 15px; font-weight: 700; color: white;
+    margin-bottom: 3px;
+}
+.pay-method-desc { font-size: 12px; color: #64748b; }
+.pay-method-arrow {
+    color: #334155; font-size: 18px; flex-shrink: 0;
+    transition: color 0.2s;
+}
+.pay-method-btn:hover .pay-method-arrow { color: #38bdf8; }
+.pay-method-btn:disabled {
+    opacity: 0.6; cursor: not-allowed; transform: none !important;
+    box-shadow: none !important;
+}
+
+/* ── UPI view ── */
+.upi-view { display: none; }
+.upi-view.active { display: block; }
+.upi-back {
+    background: none; border: none; color: #64748b;
+    font-family: 'Poppins', sans-serif; font-size: 12px;
+    cursor: pointer; padding: 0; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 4px; transition: color 0.15s;
+}
+.upi-back:hover { color: #38bdf8; }
+.upi-inr {
+    text-align: center; margin-bottom: 20px;
+}
+.upi-inr-label { font-size: 12px; color: #64748b; margin-bottom: 4px; }
+.upi-inr-amount { font-size: 34px; font-weight: 700; color: #4ade80; line-height: 1; }
+.upi-inr-sub { font-size: 11px; color: #475569; margin-top: 4px; }
+.upi-qr {
+    display: block; width: 180px; height: 180px;
+    object-fit: contain; margin: 0 auto 20px;
+    border-radius: 12px; background: white; padding: 8px;
+}
+.upi-id-row {
+    display: flex; align-items: center; gap: 8px;
+    background: #1e293b; border: 1px solid #334155;
+    border-radius: 10px; padding: 12px 14px; margin-bottom: 16px;
+}
+.upi-id-text {
+    flex: 1; font-size: 14px; font-weight: 600;
+    color: #e2e8f0; font-family: monospace;
+}
+.upi-copy-btn {
+    background: #334155; border: none; color: #94a3b8;
+    font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600;
+    padding: 5px 12px; border-radius: 7px; cursor: pointer; transition: 0.2s;
+    white-space: nowrap;
+}
+.upi-copy-btn:hover { background: #38bdf8; color: #0f172a; }
+.upi-txn-label {
+    font-size: 12px; color: #64748b; font-weight: 500;
+    margin-bottom: 6px; display: block;
+}
+.upi-txn-input {
+    width: 100%; padding: 11px 14px; border-radius: 9px;
+    border: 1px solid #334155; background: #1e293b;
+    color: white; font-family: 'Poppins', sans-serif;
+    font-size: 13px; outline: none; box-sizing: border-box;
+    margin-bottom: 12px; transition: border-color 0.15s;
+}
+.upi-txn-input:focus { border-color: #38bdf8; }
+.upi-txn-input::placeholder { color: #475569; }
+.upi-submit-btn {
+    width: 100%; padding: 12px; border-radius: 10px; border: none;
+    background: linear-gradient(90deg, #4ade80, #22c55e);
+    color: #0f172a; font-family: 'Poppins', sans-serif;
+    font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+}
+.upi-submit-btn:hover { opacity: 0.88; }
+.upi-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.upi-note {
+    font-size: 11px; color: #475569; text-align: center;
+    margin-top: 10px; line-height: 1.5;
+}
+.contact-btn {
+    display: block; width: 100%; padding: 12px;
+    border-radius: 12px; border: 1px solid #334155;
+    background: transparent;
+    color: #94a3b8; font-family: 'Poppins', sans-serif;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: 0.2s;
+}
+.contact-btn:hover { border-color: #38bdf8; color: #38bdf8; }
+
+.info-divider { border: none; border-top: 1px solid #334155; margin: 0; }
+
+.info-row {
+    display: flex; align-items: center;
+    gap: 10px; font-size: 13px; color: #94a3b8;
+}
+.info-row span.icon { font-size: 16px; }
+.info-row strong { color: #e2e8f0; }
+
+/* Description */
+.detail-desc {
+    background: #1e293b; border: 1px solid #334155;
+    border-radius: 14px; padding: 22px 24px;
+    margin-top: 28px; color: #cbd5e1;
+    font-size: 14px; line-height: 1.8;
+}
+.detail-desc h3 {
+    font-size: 12px; font-weight: 700; color: #64748b;
+    letter-spacing: 0.6px; text-transform: uppercase;
+    margin-bottom: 12px;
+}
+.detail-desc p { white-space: pre-wrap; margin: 0; }
+
+/* Trust strip */
+.trust-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px; margin-top: 28px;
+}
+.trust-box {
+    background: #1e293b; border: 1px solid #334155;
+    border-radius: 12px; padding: 16px 14px;
+    text-align: center;
+}
+.trust-box .t-icon { font-size: 22px; margin-bottom: 6px; }
+.trust-box .t-title { font-size: 12px; font-weight: 700; color: white; margin-bottom: 4px; }
+.trust-box .t-sub { font-size: 11px; color: #64748b; line-height: 1.4; }
+@media (max-width: 500px) {
+    .trust-strip { grid-template-columns: 1fr; }
+}
+
+/* Reviews */
+.reviews-section { margin-top: 40px; }
+.reviews-section h2 {
+    font-size: 18px; font-weight: 700; color: white;
+    margin-bottom: 18px;
+}
+.review-card {
+    background: #1e293b; border: 1px solid #334155;
+    border-radius: 14px; padding: 18px 20px;
+    margin-bottom: 12px;
+}
+.review-header {
+    display: flex; align-items: center;
+    gap: 12px; margin-bottom: 10px;
+}
+.review-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    object-fit: cover; background: #0f172a;
+    border: 2px solid #334155; flex-shrink: 0;
+}
+.review-name { font-size: 14px; font-weight: 600; color: white; }
+.review-date { font-size: 11px; color: #475569; margin-top: 2px; }
+.review-stars { color: #fbbf24; font-size: 13px; margin-left: auto; }
+.review-text { font-size: 13px; color: #94a3b8; line-height: 1.7; }
+
+.loading { text-align: center; padding: 80px; color: #94a3b8; font-size: 15px; }
+</style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">
+        <img src="images/logo.png" alt="Clasherman Logo">
+    </div>
+    <div class="mobile-nav">
+        <a href="#" id="backLink">← Back</a>
+    </div>
+</header>
+
+<div id="loadingState" class="loading">Loading listing...</div>
+
+<div class="detail-wrap" id="detailPage" style="display:none;">
+
+    <a href="#" id="backLink2" class="back-link">← Back to listings</a>
+
+    <!-- Title above everything -->
+    <p class="detail-title" id="detailTitle"></p>
+
+    <div class="detail-grid">
+        <!-- Left: images -->
+        <div class="detail-images">
+            <img id="mainImg" class="main-img" src="" alt="Listing image">
+            <div class="gallery-row" id="galleryRow"></div>
+        </div>
+
+        <!-- Right: info panel -->
+        <div class="detail-info">
+            <div>
+                <div style="font-size:12px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;">Price</div>
+                <div class="detail-price" id="detailPrice"></div>
+            </div>
+
+            <div class="detail-badges">
+                <span class="badge badge-green"><img src="images/instant.png" style="width:13px;height:13px;object-fit:contain;vertical-align:middle;"> Instant Delivery</span>
+                <span class="badge badge-blue"><img src="images/verified.png" style="width:13px;height:13px;object-fit:contain;vertical-align:middle;"> Verified Listing</span>
+                <span class="badge badge-purple"><img src="images/secure.png" style="width:13px;height:13px;object-fit:contain;vertical-align:middle;"> Secure Transfer</span>
+            </div>
+
+            <hr class="info-divider">
+
+            <div class="info-row">
+                <img src="images/delivery.png" style="width:18px;height:18px;object-fit:contain;">
+                <span>Delivery time: <strong>Usually within 1 hour</strong></span>
+            </div>
+            <div class="info-row">
+                <img src="images/shield.png" style="width:18px;height:18px;object-fit:contain;">
+                <span>Buyer protection: <strong>Full refund if not delivered</strong></span>
+            </div>
+            <div class="info-row">
+                <img src="images/chat.png" style="width:18px;height:18px;object-fit:contain;">
+                <span>Support: <strong>24/7 live chat</strong></span>
+            </div>
+
+            <hr class="info-divider">
+
+            <button class="order-btn" id="orderBtn"><img src="images/cart.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:7px;">Order Now</button>
+            <button class="contact-btn" id="contactBtn"><img src="images/chat.png" style="width:15px;height:15px;object-fit:contain;vertical-align:middle;margin-right:7px;">Ask a Question</button>
+        </div>
+    </div>
+
+    <!-- Description -->
+    <div class="detail-desc" id="detailDesc" style="display:none;">
+        <h3>Description</h3>
+        <p id="descText"></p>
+    </div>
+
+    <!-- Trust badges -->
+    <div class="trust-strip">
+        <div class="trust-box">
+            <div class="t-icon"><img src="images/ssl.png" style="width:28px;height:28px;object-fit:contain;"></div>
+            <div class="t-title">Secure Payment</div>
+            <div class="t-sub">All transactions are SSL encrypted & protected</div>
+        </div>
+        <div class="trust-box">
+            <div class="t-icon"><img src="images/delivery.png" style="width:28px;height:28px;object-fit:contain;"></div>
+            <div class="t-title">Fast Delivery</div>
+            <div class="t-sub">Account details sent within 1 hour of payment</div>
+        </div>
+        <div class="trust-box">
+            <div class="t-icon"><img src="images/refund.png" style="width:28px;height:28px;object-fit:contain;"></div>
+            <div class="t-title">Money-Back Guarantee</div>
+            <div class="t-sub">Full refund if the account is not as described</div>
+        </div>
+    </div>
+
+    <!-- Reviews -->
+    <div class="reviews-section">
+        <h2><img src="images/star.png" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:8px;">Customer Reviews</h2>
+
+        <div class="review-card">
+            <div class="review-header">
+                <img class="review-avatar" src="https://api.dicebear.com/7.x/pixel-art/svg?seed=alpha99" alt="avatar">
+                <div>
+                    <div class="review-name">GoldRaider#4821</div>
+                    <div class="review-date">March 2026</div>
+                </div>
+                <div class="review-stars">★★★★★</div>
+            </div>
+            <p class="review-text">Super fast delivery, account was exactly as described. Very smooth process, would definitely buy again. Highly recommend Clasherman!</p>
+        </div>
+
+        <div class="review-card">
+            <div class="review-header">
+                <img class="review-avatar" src="https://api.dicebear.com/7.x/pixel-art/svg?seed=dragon22" alt="avatar">
+                <div>
+                    <div class="review-name">DarkWarden#3317</div>
+                    <div class="review-date">February 2026</div>
+                </div>
+                <div class="review-stars">★★★★★</div>
+            </div>
+            <p class="review-text">Got my account in under 30 minutes. Great seller, very responsive on chat. The account was even better than expected. 10/10!</p>
+        </div>
+
+        <div class="review-card">
+            <div class="review-header">
+                <img class="review-avatar" src="https://api.dicebear.com/7.x/pixel-art/svg?seed=clash55" alt="avatar">
+                <div>
+                    <div class="review-name">IronQueen#7790</div>
+                    <div class="review-date">February 2026</div>
+                </div>
+                <div class="review-stars">★★★★☆</div>
+            </div>
+            <p class="review-text">Legit and trustworthy site. Delivery took about an hour but support kept me updated the whole time. Very professional service.</p>
+        </div>
+
+        <div class="review-card">
+            <div class="review-header">
+                <img class="review-avatar" src="https://api.dicebear.com/7.x/pixel-art/svg?seed=royal88" alt="avatar">
+                <div>
+                    <div class="review-name">SwiftArcher#2204</div>
+                    <div class="review-date">January 2026</div>
+                </div>
+                <div class="review-stars">★★★★★</div>
+            </div>
+            <p class="review-text">Best place to buy clash accounts. Price was fair, account was maxed as listed. No issues at all. Already referred my clan mates!</p>
+        </div>
+
+        <div class="review-card">
+            <div class="review-header">
+                <img class="review-avatar" src="https://api.dicebear.com/7.x/pixel-art/svg?seed=titan44" alt="avatar">
+                <div>
+                    <div class="review-name">CrimsonKnight#5531</div>
+                    <div class="review-date">January 2026</div>
+                </div>
+                <div class="review-stars">★★★★★</div>
+            </div>
+            <p class="review-text">Bought two accounts from Clasherman and both times the experience was flawless. Safe, fast, and great support team. Solid marketplace!</p>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <p>© 2026 Clasherman.com | All Rights Reserved</p>
+</footer>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const listingId   = params.get('id');
+const listingType = params.get('type');
+
+const collectionMap = { coc: 'listings_coc', cr: 'listings_cr', clans: 'listings_clans' };
+
+const backHref = listingType === 'coc' ? 'coc.html' : listingType === 'cr' ? 'cr.html' : 'clans.html';
+const backText = listingType === 'coc' ? '← Back to CoC Accounts' : listingType === 'cr' ? '← Back to CR Accounts' : '← Back to Clans';
+document.getElementById('backLink').href  = backHref;
+document.getElementById('backLink').textContent  = backText;
+document.getElementById('backLink2').href = backHref;
+document.getElementById('backLink2').textContent = backText;
+
+// Listing data stored globally for payment handlers
+let _listingTitle = '';
+let _listingPrice = 0;
+const isStatic = !listingId && params.get('title') !== null;
+
+document.addEventListener('authStateChanged', async () => {
+    if (isStatic) {
+        const title = params.get('title') || 'Clasherman Listing';
+        const price = parseFloat(params.get('price')) || 0;
+        const img   = params.get('img') || '';
+
+        _listingTitle = title;
+        _listingPrice = price;
+
+        document.title = title + ' - Clasherman';
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('detailPage').style.display = 'block';
+        document.getElementById('detailTitle').textContent = title;
+        document.getElementById('detailPrice').textContent = '$' + price;
+
+        if (img) {
+            const mainImg = document.getElementById('mainImg');
+            mainImg.src = img;
+            const thumb = document.createElement('img');
+            thumb.className = 'gallery-thumb active';
+            thumb.src = img;
+            thumb.onclick = () => { mainImg.src = img; };
+            document.getElementById('galleryRow').appendChild(thumb);
+        }
+
+        document.getElementById('orderBtn').onclick = () => {
+            document.getElementById('payModal').classList.add('open');
+        };
+        document.getElementById('contactBtn').onclick = () => {
+            if (window.openContactUs) window.openContactUs();
+        };
+        return;
+    }
+
+    if (!listingId || !listingType) {
+        document.getElementById('loadingState').textContent = 'Invalid listing.';
+        return;
+    }
+    try {
+        const doc = await window._db.collection(collectionMap[listingType]).doc(listingId).get();
+        if (!doc.exists) { document.getElementById('loadingState').textContent = 'Listing not found.'; return; }
+        const d = doc.data();
+
+        _listingTitle = d.title || 'Clasherman Listing';
+        _listingPrice = parseFloat(String(d.price).replace(/[^0-9.]/g, '')) || 0;
+
+        document.title = d.title + ' - Clasherman';
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('detailPage').style.display = 'block';
+        document.getElementById('detailTitle').textContent = d.title;
+        document.getElementById('detailPrice').textContent = '$' + d.price;
+
+        const mainImg = document.getElementById('mainImg');
+        mainImg.src = d.thumbnail || (d.images && d.images[0]) || '';
+
+        const allImgs = [d.thumbnail, ...(d.images || [])].filter(Boolean);
+        const unique = [...new Set(allImgs)];
+        const galleryRow = document.getElementById('galleryRow');
+        unique.forEach((url, i) => {
+            const img = document.createElement('img');
+            img.className = 'gallery-thumb' + (i === 0 ? ' active' : '');
+            img.src = url;
+            img.onclick = () => {
+                mainImg.src = url;
+                document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+                img.classList.add('active');
+            };
+            galleryRow.appendChild(img);
+        });
+
+        if (d.description) {
+            document.getElementById('descText').textContent = d.description;
+            document.getElementById('detailDesc').style.display = 'block';
+        }
+
+        const currentUser = window._auth && window._auth.currentUser;
+        const isOwnListing = currentUser && d.sellerUid && currentUser.uid === d.sellerUid;
+
+        if (isOwnListing) {
+            const orderBtn = document.getElementById('orderBtn');
+            orderBtn.disabled = true;
+            orderBtn.style.opacity = '0.4';
+            orderBtn.style.cursor = 'not-allowed';
+            orderBtn.title = 'You cannot buy your own listing';
+            orderBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:6px;"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>This is your listing';
+        } else {
+            document.getElementById('orderBtn').onclick = () => {
+                document.getElementById('payModal').classList.add('open');
+            };
+        }
+
+        document.getElementById('contactBtn').onclick = () => {
+            if (window.openContactUs) window.openContactUs();
+        };
+    } catch(err) {
+        document.getElementById('loadingState').textContent = 'Error loading listing.';
+    }
+});
+
+
+</script>
+
+<script>
+async function payCryptoNow() {
+    const btn = document.getElementById('payCrypto');
+    const arrow = btn.querySelector('.pay-method-arrow');
+    const originalArrow = arrow.textContent;
+
+    // Show loading state
+    arrow.textContent = '...';
+    btn.disabled = true;
+
+    try {
+        const res = await fetch('https://api.nowpayments.io/v1/invoice', {
+            method: 'POST',
+            headers: {
+                'x-api-key': 'ZFAWGQT-M9PM3BC-K9WWGXF-DFYRCEJ',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                price_amount:       _listingPrice,
+                price_currency:     'usd',
+                order_id:           listingId || ('STATIC-' + Math.random().toString(36).substr(2,8).toUpperCase()),
+                order_description:  _listingTitle,
+                success_url:        window.location.href + '&payment=success',
+                cancel_url:         window.location.href
+            })
+        });
+
+        const data = await res.json();
+
+        if (data.invoice_url) {
+            window.location.href = data.invoice_url;
+        } else {
+            alert('Could not create payment. Please try again.\n' + (data.message || ''));
+            arrow.textContent = originalArrow;
+            btn.disabled = false;
+        }
+    } catch (err) {
+        alert('Network error. Please check your connection and try again.');
+        arrow.textContent = originalArrow;
+        btn.disabled = false;
+    }
+}
+
+function resetPayModal() {
+    document.getElementById('payModal').classList.remove('open');
+    showMethodView();
+}
+
+function showMethodView() {
+    document.getElementById('payMethodView').style.display = '';
+    document.getElementById('upiView').classList.remove('active');
+}
+
+async function showUpiView() {
+    document.getElementById('payMethodView').style.display = 'none';
+    document.getElementById('upiView').classList.add('active');
+
+    const amountEl = document.getElementById('upiInrAmount');
+    const subEl    = document.getElementById('upiInrSub');
+    amountEl.textContent = 'Loading…';
+    subEl.textContent    = '';
+
+    try {
+        const res  = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        const data = await res.json();
+        const rate = data.rates && data.rates.INR;
+        if (rate && _listingPrice) {
+            const inr = Math.ceil(_listingPrice * rate);
+            amountEl.textContent = '₹' + inr.toLocaleString('en-IN');
+            subEl.textContent    = `$${_listingPrice} USD × ₹${Math.round(rate)}/USD`;
+        } else {
+            amountEl.textContent = '₹—';
+            subEl.textContent    = 'Could not fetch rate';
+        }
+    } catch(e) {
+        amountEl.textContent = '₹—';
+        subEl.textContent    = 'Could not fetch exchange rate';
+    }
+}
+
+function copyUpiId(btn) {
+    navigator.clipboard.writeText('itzprince338-1@oksbi').then(() => {
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+}
+
+let _pendingTxnId = '';
+
+async function submitUpiPayment() {
+    const txnId = document.getElementById('upiTxnInput').value.trim();
+    if (!txnId) {
+        document.getElementById('upiTxnInput').focus();
+        document.getElementById('upiTxnInput').style.borderColor = '#f87171';
+        setTimeout(() => document.getElementById('upiTxnInput').style.borderColor = '', 1500);
+        return;
+    }
+    _pendingTxnId = txnId;
+
+    // Move to Gmail step
+    document.getElementById('upiView').innerHTML = `
+        <button class="upi-back" onclick="showUpiView()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            Back
+        </button>
+        <div style="text-align:center;margin-bottom:22px;">
+            <img src="images/verified.png" style="width:48px;height:48px;object-fit:contain;margin-bottom:12px;opacity:0.85;">
+            <div style="font-size:16px;font-weight:700;color:white;margin-bottom:6px;">Almost there!</div>
+            <div style="font-size:13px;color:#64748b;">Enter the Gmail where you'd like to receive your product details.</div>
+        </div>
+        <label class="upi-txn-label">Your Gmail address</label>
+        <input class="upi-txn-input" id="upiGmailInput" type="email" placeholder="yourname@gmail.com"
+            value="${window._auth.currentUser ? window._auth.currentUser.email || '' : ''}">
+        <button class="upi-submit-btn" onclick="confirmUpiGmail()" style="background:linear-gradient(90deg,#38bdf8,#818cf8);">Confirm &amp; Submit</button>
+        <div style="margin-top:14px;background:#1e293b;border:1px solid #334155;border-radius:12px;padding:14px 16px;">
+            <div style="font-size:12px;color:#4ade80;font-weight:600;margin-bottom:6px;">✓ If payment is received</div>
+            <div style="font-size:12px;color:#94a3b8;line-height:1.6;">Your product will be delivered to this Gmail within <strong style="color:white;">1 hour</strong>.</div>
+            <div style="font-size:12px;color:#f59e0b;font-weight:600;margin:10px 0 6px;">⚠ If payment is not found</div>
+            <div style="font-size:12px;color:#94a3b8;line-height:1.6;">Your refund will reflect in your account within <strong style="color:white;">24 hours</strong>.</div>
+        </div>`;
+}
+
+async function confirmUpiGmail() {
+    const gmail = document.getElementById('upiGmailInput').value.trim();
+    if (!gmail || !gmail.includes('@')) {
+        document.getElementById('upiGmailInput').focus();
+        document.getElementById('upiGmailInput').style.borderColor = '#f87171';
+        setTimeout(() => document.getElementById('upiGmailInput').style.borderColor = '', 1500);
+        return;
+    }
+
+    const btn = document.querySelector('.upi-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    try {
+        await window._db.collection('upi_payments').add({
+            listingId,
+            listingType,
+            listingTitle: _listingTitle,
+            priceUsd:     _listingPrice,
+            upiId:        'itzprince338-1@oksbi',
+            txnId:        _pendingTxnId,
+            deliveryEmail: gmail,
+            buyerUid:     window._auth.currentUser ? window._auth.currentUser.uid : null,
+            buyerEmail:   window._auth.currentUser ? window._auth.currentUser.email : null,
+            status:       'pending',
+            submittedAt:  firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        document.getElementById('upiView').innerHTML = `
+            <div style="text-align:center;padding:20px 0;">
+                <img src="images/verified.png" style="width:60px;height:60px;object-fit:contain;margin-bottom:16px;">
+                <div style="font-size:18px;font-weight:700;color:white;margin-bottom:8px;">Payment Submitted!</div>
+                <div style="font-size:13px;color:#64748b;line-height:1.8;margin-bottom:16px;">
+                    Transaction ID: <span style="color:#4ade80;font-family:monospace;">${_pendingTxnId}</span><br>
+                    Delivery to: <span style="color:#38bdf8;">${gmail}</span>
+                </div>
+                <div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:14px 16px;text-align:left;margin-bottom:20px;">
+                    <div style="font-size:12px;color:#4ade80;font-weight:600;margin-bottom:5px;">✓ Payment received</div>
+                    <div style="font-size:12px;color:#94a3b8;">Product delivered to your Gmail within <strong style="color:white;">1 hour</strong>.</div>
+                    <div style="font-size:12px;color:#f59e0b;font-weight:600;margin:10px 0 5px;">⚠ Payment not found</div>
+                    <div style="font-size:12px;color:#94a3b8;">Refund reflected within <strong style="color:white;">24 hours</strong>.</div>
+                </div>
+                <button onclick="resetPayModal()" style="padding:10px 32px;border-radius:9px;border:none;background:#334155;color:#94a3b8;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Close</button>
+            </div>`;
+    } catch(err) {
+        btn.disabled = false;
+        btn.textContent = 'Confirm & Submit';
+        alert('Error submitting. Please try again.');
+    }
+}
+</script>
+
+<!-- Payment Method Modal -->
+<div id="payModal" class="pay-overlay" onclick="if(event.target===this)resetPayModal()">
+    <div class="pay-box">
+        <button class="pay-close" onclick="resetPayModal()">✕</button>
+
+        <!-- Method selection -->
+        <div id="payMethodView">
+            <div class="pay-title">Select Payment Method</div>
+            <div class="pay-subtitle">Choose how you'd like to pay</div>
+            <div class="pay-methods">
+                <button class="pay-method-btn" id="payCrypto" onclick="payCryptoNow()">
+                    <img src="images/crypto.png" alt="Crypto">
+                    <div class="pay-method-info">
+                        <div class="pay-method-name">Crypto</div>
+                        <div class="pay-method-desc">Pay with BTC, ETH, USDT and more</div>
+                    </div>
+                    <span class="pay-method-arrow">›</span>
+                </button>
+                <button class="pay-method-btn" onclick="showUpiView()">
+                    <img src="images/upi.png" alt="UPI">
+                    <div class="pay-method-info">
+                        <div class="pay-method-name">UPI</div>
+                        <div class="pay-method-desc">Pay instantly via UPI</div>
+                    </div>
+                    <span class="pay-method-arrow">›</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- UPI view -->
+        <div id="upiView" class="upi-view">
+            <button class="upi-back" onclick="showMethodView()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                Back
+            </button>
+            <div class="upi-inr">
+                <div class="upi-inr-label">Amount to Pay</div>
+                <div class="upi-inr-amount" id="upiInrAmount">Loading…</div>
+                <div class="upi-inr-sub" id="upiInrSub"></div>
+            </div>
+            <img src="images/qr.png" alt="UPI QR Code" class="upi-qr">
+            <div class="upi-id-row">
+                <span class="upi-id-text">itzprince338-1@oksbi</span>
+                <button class="upi-copy-btn" onclick="copyUpiId(this)">Copy</button>
+            </div>
+            <label class="upi-txn-label">Enter UPI Transaction ID after payment</label>
+            <input class="upi-txn-input" id="upiTxnInput" placeholder="e.g. 4056789123456789">
+            <button class="upi-submit-btn" onclick="submitUpiPayment()">Submit Payment</button>
+            <p class="upi-note">After submitting, our team will verify your payment and deliver within 24 hours.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/logo3.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boosting Services - Clasherman</title>
+
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="auth.js" defer></script>
+<script src="orders.js" defer></script>
+<script src="contact-us.js" defer></script>
+
+<style>
+.boost-container {
+    padding: 50px 40px;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+.boost-container h1 {
+    font-size: 42px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 1px;
+}
+
+.boost-container h1 span {
+    background: linear-gradient(90deg, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.boost-subtitle {
+    color: #94a3b8;
+    font-size: 16px;
+    margin: 10px 0 40px;
+}
+
+.boost-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.boost-card {
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 28px 24px;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.boost-card .boost-btn {
+    margin-top: auto;
+    width: 100%;
+}
+.boost-card h3 {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.boost-card p {
+    flex: 1;
+}
+
+.boost-card:hover {
+    transform: translateY(-4px);
+    border-color: #38bdf8;
+}
+
+.boost-icon {
+    font-size: 36px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.boost-card h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.boost-card p {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.boost-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: #38bdf8;
+    margin-bottom: 16px;
+}
+
+.boost-game-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+}
+
+.tag-coc  { background: rgba(56,189,248,0.15); color: #38bdf8; }
+.tag-cr   { background: rgba(167,139,250,0.15); color: #a78bfa; }
+
+.boost-btn {
+    display: block;
+    width: 100%;
+    padding: 11px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(90deg, #38bdf8, #818cf8);
+    color: #0f172a;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+}
+
+.boost-btn:hover { opacity: 0.85; }
+
+.boost-note {
+    margin: 50px auto 0;
+    max-width: 620px;
+    background: rgba(56,189,248,0.07);
+    border: 1px solid rgba(56,189,248,0.2);
+    border-radius: 14px;
+    padding: 24px 28px;
+    color: #94a3b8;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.boost-note strong { color: #38bdf8; }
+
+@media (max-width: 600px) {
+    .boost-container { padding: 30px 16px; }
+    .boost-container h1 { font-size: 28px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="logo">
+        <img src="images/logo.png" alt="Clasherman Logo">
+    </div>
+
+    <div class="search-container">
+        <input type="text" placeholder="Search accounts, clans..." />
+        <button>🔍</button>
+    </div>
+
+    <div class="mobile-nav">
+        <a href="index.html">Home</a>
+        <a href="#" onclick="openMyOrders();return false;">My Orders</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="terms.html">T&C</a>
+    </div>
+</header>
+
+<div class="boost-container">
+    <h1><span>Boosting Services</span></h1>
+    <p class="boost-subtitle">Pro players. Fast delivery. Safe & guaranteed.</p>
+
+    <div class="boost-grid">
+
+        <!-- CoC Wall Max -->
+        <div class="boost-card">
+            <div class="boost-icon"><img src="images/boost0.png" style="width:200px;height:200px;object-fit:contain;"></div>
+            <span class="boost-game-tag tag-coc">Clash of Clans</span>
+            <h3>Wall Max Service</h3>
+            <p>We max out every single wall segment on your base to full level — fast, safe, and done by experienced players.</p>
+            <div class="boost-price">Starting at $10</div>
+            <button onclick="openOrder('Wall Max Service')" class="boost-btn">Order Now</button>
+        </div>
+
+        <!-- CoC Trophy Pushing -->
+        <div class="boost-card">
+            <div class="boost-icon"><img src="images/boost1.png" style="width:145px;height:145px;object-fit:contain;margin-bottom:20px;"></div>
+            <span class="boost-game-tag tag-coc">Clash of Clans</span>
+            <h3>CoC Trophy Pushing</h3>
+            <p>Reach Legend League or any desired trophy count. We push your account manually to your target rank.</p>
+            <div class="boost-price">Starting at $10</div>
+            <button onclick="openOrder('CoC Trophy Pushing')" class="boost-btn">Order Now</button>
+        </div>
+
+        <!-- Hero Max -->
+        <div class="boost-card">
+            <div class="boost-icon"><img src="images/boost2.png" style="width:200px;height:200px;object-fit:contain;"></div>
+            <span class="boost-game-tag tag-coc">Clash of Clans</span>
+            <h3>Hero Max Service</h3>
+            <p>Max your Barbarian King, Archer Queen, Grand Warden, Royal Champion, or Minion Prince to full level.</p>
+            <div class="boost-price">Starting at $10</div>
+            <button onclick="openOrder('Hero Max Service')" class="boost-btn">Order Now</button>
+        </div>
+
+        <!-- CoC War Win -->
+        <div class="boost-card">
+            <div class="boost-icon"><img src="images/boost3.png" style="width:150px;height:150px;object-fit:contain;"></div>
+            <span class="boost-game-tag tag-coc">Clash of Clans</span>
+            <h3>CWL & War Wins</h3>
+            <p>Get guaranteed war wins and CWL medals. We coordinate attacks on your behalf throughout the war.</p>
+            <div class="boost-price">Starting at $10</div>
+            <button onclick="openOrder('CWL & War Wins')" class="boost-btn">Order Now</button>
+        </div>
+
+        <!-- CR Trophy Pushing -->
+        <div class="boost-card">
+            <div class="boost-icon"><img src="images/boost4.png" style="width:170px;height:170px;object-fit:contain;"></div>
+            <span class="boost-game-tag tag-cr">Clash Royale</span>
+            <h3>CR Trophy Pushing</h3>
+            <p>Hit Ultimate Champion, Legendary Arena, or any custom trophy goal. Handled by top ladder players.</p>
+            <div class="boost-price">Starting at $10</div>
+            <button onclick="openOrder('CR Trophy Pushing')" class="boost-btn">Order Now</button>
+        </div>
+
+        <!-- CR Card Max -->
+        <div class="boost-card">
+            <div class="boost-icon"><img src="images/boost5.png" style="width:170px;height:170px;object-fit:contain;"></div>
+            <span class="boost-game-tag tag-cr">Clash Royale</span>
+            <h3>CR Card Maxing</h3>
+            <p>Get your favourite cards upgraded to max level quickly. We use the fastest and safest method available.</p>
+            <div class="boost-price">Starting at $10</div>
+            <button onclick="openOrder('CR Card Maxing')" class="boost-btn">Order Now</button>
+        </div>
+
+        <!-- Custom Order -->
+        <div class="boost-card">
+            <div class="boost-icon"><img src="images/boost6.png" style="width:200px;height:200px;object-fit:contain;"></div>
+            <span class="boost-game-tag tag-coc">Any Game</span>
+            <h3>Custom Boost Request</h3>
+            <p>Don't see what you need? Contact us directly and we'll create a custom boosting package just for you.</p>
+            <div class="boost-price">Custom Price</div>
+            <button onclick="openOrder('Custom Boost Request')" class="boost-btn">Contact Us</button>
+        </div>
+
+    </div>
+
+    <div class="boost-note">
+        <strong>How it works:</strong> Click "Order Now" on any service and chat with us. We'll confirm details, agree on price, and start your boost. All services are done manually by real players — no bots, no risk.
+    </div>
+</div>
+
+</body>
+</html>

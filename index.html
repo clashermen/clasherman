@@ -2,58 +2,64 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/logo3.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Clasherman - Premium Game Accounts</title>
 
 <link rel="stylesheet" href="style.css">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Rajdhani:wght@700&display=swap" rel="stylesheet">
 </head>
-<!--Start of Tawk.to Script-->
-<!--Start of Tawk.to Script-->
-<script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/69d222061772311c3585e2a0/1jled9qr1';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
-})();
-</script>
-<!--End of Tawk.to Script-->
-<!--End of Tawk.to Script-->
 <body>
 
 <!-- NAVBAR -->
 <header class="navbar">
     <div class="logo">
         <img src="images/logo.png" alt="Clasherman Logo">
+        <span class="logo-text">CLASHERMAN</span>
     </div>
 
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="Search accounts, clans..." />
-        <button id="searchBtn">🔍</button>
+        <button id="searchBtn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
         <div id="searchResults" class="search-results"></div>
     </div>
 
-    <div class="mobile-nav">
-        <a href="https://tawk.to/chat/69d222061772311c3585e2a0/1jled9qr1" target="_blank">Contact us</a>
-        <a href="reviews.html">Reviews</a>
-        <a href="terms.html">T&C</a>
-    </div>
-
     <div class="nav-auth">
-        <span id="authBtn" onclick="openAuth()" class="nav-login-btn">🔐 Login</span>
+        <span id="authBtn" onclick="openAuth()" class="nav-login-btn"><img src="images/login.png" style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:6px;"> Login</span>
         <span id="userGreeting" style="display:none;" class="mobile-nav-user">
-            <img id="userAvatar" src="" style="width:32px;height:32px;border-radius:50%;border:2px solid #38bdf8;object-fit:cover;background:#1e293b;">
-            <span id="userNameDisplay"></span>
-            <span onclick="logout()" class="mobile-nav-logout">Logout</span>
+            <a id="adminPanelBtn" href="admin.html" style="display:none;padding:6px 14px;border-radius:8px;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#0f172a;font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;">🛡️ Admin Panel</a>
+            <div class="avatar-wrap" onclick="toggleAvatarMenu()">
+                <img id="userAvatar" src="" style="width:42px;height:42px;border-radius:50%;border:2px solid #38bdf8;object-fit:cover;background:#1e293b;cursor:pointer;">
+                <div class="avatar-dropdown" id="avatarDropdown">
+                    <span id="userNameDisplay"></span>
+                    <span onclick="logout()" class="mobile-nav-logout">Logout</span>
+                </div>
+            </div>
         </span>
     </div>
+
+    <!-- Hamburger — rightmost -->
+    <div class="hamburger-btn" onclick="toggleHamburger()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
 </header>
+
+<div class="hamburger-overlay" id="hamburgerOverlay" onclick="toggleHamburger()"></div>
+
+<div class="hamburger-menu" id="hamburgerMenu">
+    <nav class="hamburger-links">
+        <a href="index.html">Home</a>
+        <a href="boosting.html">Boosting</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="terms.html">T&C</a>
+        <a href="#" onclick="openMyOrders();toggleHamburger();return false;">My Orders</a>
+        <a href="#" onclick="openContactUs();toggleHamburger();return false;">Contact Us</a>
+    </nav>
+</div>
 
 <!-- AUTH MODAL -->
 <div id="authModal" class="auth-overlay" onclick="closeAuthOutside(event)">
@@ -68,8 +74,13 @@ s0.parentNode.insertBefore(s1,s0);
         <!-- LOGIN FORM -->
         <form id="loginForm" onsubmit="handleLogin(event)">
             <p class="auth-title">Welcome back</p>
-            <input type="email" id="loginEmail" placeholder="Email" required>
-            <input type="password" id="loginPass" placeholder="Password" required>
+            <label class="auth-label">Email Address</label>
+            <input type="email" id="loginEmail" placeholder="Enter your email" required>
+            <label class="auth-label">Password</label>
+            <div class="auth-pass-wrap">
+                <input type="password" id="loginPass" placeholder="Enter your password" required>
+                <button type="button" class="auth-eye" onclick="togglePass('loginPass',this)"><img src="images/eye.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;"></button>
+            </div>
             <p id="loginError" class="auth-error"></p>
             <button type="submit" class="auth-submit">Login</button>
             <p class="forgot-link" onclick="switchTab('forgot')">Forgot password?</p>
@@ -78,10 +89,34 @@ s0.parentNode.insertBefore(s1,s0);
         <!-- SIGNUP FORM -->
         <form id="signupForm" style="display:none;" onsubmit="handleSignup(event)">
             <p class="auth-title">Create account</p>
-            <input type="text" id="signupName" placeholder="Username" required>
-            <input type="email" id="signupEmail" placeholder="Email" required>
-            <input type="password" id="signupPass" placeholder="Password (min 6 chars)" minlength="6" required>
+            <div style="display:flex;gap:10px;">
+                <div style="flex:1;">
+                    <label class="auth-label">First Name</label>
+                    <input type="text" id="signupFirst" placeholder="First name" required>
+                </div>
+                <div style="flex:1;">
+                    <label class="auth-label">Last Name</label>
+                    <input type="text" id="signupLast" placeholder="Last name" required>
+                </div>
+            </div>
+            <label class="auth-label">Email Address</label>
+            <input type="email" id="signupEmail" placeholder="Enter your email" required>
+            <label class="auth-label">Password</label>
+            <div class="auth-pass-wrap">
+                <input type="password" id="signupPass" placeholder="Min 6 characters" minlength="6" required>
+                <button type="button" class="auth-eye" onclick="togglePass('signupPass',this)"><img src="images/eye.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;"></button>
+            </div>
+            <label class="auth-label">Confirm Password</label>
+            <div class="auth-pass-wrap">
+                <input type="password" id="signupConfirm" placeholder="Repeat your password" minlength="6" required>
+                <button type="button" class="auth-eye" onclick="togglePass('signupConfirm',this)"><img src="images/eye.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;"></button>
+            </div>
+            <label class="auth-terms">
+                <input type="checkbox" id="signupTerms">
+                I agree to Clasherman's <a href="terms.html" target="_blank" style="color:#38bdf8;">Terms and Conditions</a>
+            </label>
             <p id="signupError" class="auth-error"></p>
+            <p id="signupSuccess" class="auth-success" style="font-size:14px;"></p>
             <button type="submit" class="auth-submit">Sign Up</button>
         </form>
 
@@ -99,6 +134,141 @@ s0.parentNode.insertBefore(s1,s0);
 </div>
 
 <style>
+/* ── Hamburger Button ── */
+.hamburger-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 38px;
+    height: 38px;
+    background: #1e293b;
+    border-radius: 8px;
+    padding: 9px;
+    cursor: pointer;
+    border: 1px solid #334155;
+    flex-shrink: 0;
+}
+.hamburger-btn span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: white;
+    border-radius: 2px;
+    transition: 0.3s;
+}
+.hamburger-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger-btn.open span:nth-child(2) { opacity: 0; }
+.hamburger-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── Overlay ── */
+.hamburger-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1050;
+}
+.hamburger-overlay.show { display: block; }
+
+/* ── Slide-in Menu ── */
+.hamburger-menu {
+    position: fixed;
+    top: 0;
+    right: -260px;
+    width: 240px;
+    height: 100%;
+    background: #0a0f1e;
+    border-left: 1px solid #1e293b;
+    z-index: 1099;
+    padding: 80px 20px 30px;
+    transition: right 0.3s ease;
+}
+.hamburger-menu.open { right: 0; }
+
+.hamburger-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.hamburger-links a {
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 15px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    transition: 0.2s;
+    display: block;
+}
+.hamburger-links a:hover {
+    background: #1e293b;
+    color: #38bdf8;
+}
+
+/* ── Page background ── */
+body {
+    background: url('images/bp.jpg') center center / cover no-repeat fixed;
+}
+@media (max-width: 768px) {
+    body {
+        background: url('images/bpm.jpg') center center / cover no-repeat fixed;
+    }
+}
+
+/* ── Trust icons row ── */
+.trust-icons-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    padding: 18px 20px;
+    background: #0a0f1e;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    flex-wrap: wrap;
+}
+.trust-icon-img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+}
+.trust-icon-img:hover { opacity: 1; }
+
+/* ── Features section ── */
+.features {
+    background: #0f172a;
+}
+.feature-box {
+    background: #1e293b;
+    border: 1px solid #334155;
+}
+.feature-icon {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    margin-bottom: 14px;
+}
+
+/* ── Logo text ── */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+.logo-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #ffffff;
+    user-select: none;
+}
+@media (max-width: 480px) {
+    .logo-text { font-size: 17px; letter-spacing: 1px; }
+}
+
 /* NAV AUTH SLOT */
 .nav-auth {
     display: flex;
@@ -127,16 +297,40 @@ s0.parentNode.insertBefore(s1,s0);
     transform: translateY(-1px);
 }
 
+.avatar-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+.avatar-dropdown {
+    display: none;
+    position: absolute;
+    top: 52px;
+    right: 0;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 12px 16px;
+    min-width: 150px;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 500;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.avatar-dropdown.show { display: flex; }
+#userNameDisplay {
+    color: #38bdf8;
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+}
 .mobile-nav-user {
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 13px;
 }
-#userNameDisplay {
-    color: #38bdf8;
-    font-weight: 600;
-}
+
 .mobile-nav-logout {
     cursor: pointer;
     background: transparent;
@@ -271,12 +465,65 @@ s0.parentNode.insertBefore(s1,s0);
     cursor: pointer;
 }
 .forgot-link:hover { text-decoration: underline; }
+.auth-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 4px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+.auth-pass-wrap {
+    position: relative;
+    margin-bottom: 12px;
+}
+.auth-pass-wrap input {
+    margin-bottom: 0;
+    padding-right: 42px;
+}
+.auth-eye {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    opacity: 0.5;
+    transition: opacity 0.15s;
+    padding: 0;
+    line-height: 1;
+}
+.auth-eye:hover { opacity: 1; }
+.auth-terms {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #64748b;
+    margin: 12px 0 4px;
+    white-space: nowrap;
+}
+.auth-terms input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    accent-color: #38bdf8;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+}
 </style>
 
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="orders.js" defer></script>
+<script src="contact-us.js" defer></script>
+<script src="my-listings.js" defer></script>
 
 <script>
 // ── Firebase init ─────────────────────────────────────
@@ -291,7 +538,16 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const db = firebase.firestore();
+const db   = firebase.firestore();
+window._auth = auth;
+window._db   = db;
+
+// ── Toggle password visibility ────────────────────────
+function togglePass(id, btn) {
+    const input = document.getElementById(id);
+    if (input.type === 'password') { input.type = 'text'; btn.style.opacity = '1'; }
+    else { input.type = 'password'; btn.style.opacity = '0.5'; }
+}
 
 // ── Modal helpers ─────────────────────────────────────
 function openAuth() { document.getElementById('authModal').classList.add('open'); }
@@ -327,6 +583,18 @@ async function handleForgot() {
     }
 }
 
+// ── Username generator ────────────────────────────────
+function generateUsername() {
+    const adj  = ['Gold','Dark','Iron','Royal','Swift','Stone','Frost','Blaze','Storm','Night',
+                  'Steel','Shadow','Crimson','Ancient','Savage','Mighty','Hyper','Titan','Brave','Epic'];
+    const noun = ['Raider','Warden','Archer','Barb','Queen','Dragon','Knight','Shield','Wizard','Goblin',
+                  'Titan','Warrior','Basher','Crusher','Hunter','Slayer','Guard','Ranger','Mage','Troll'];
+    const a   = adj [Math.floor(Math.random() * adj.length)];
+    const n   = noun[Math.floor(Math.random() * noun.length)];
+    const num = Math.floor(1000 + Math.random() * 9000);
+    return `${a}${n}#${num}`;
+}
+
 // ── Sign Up ───────────────────────────────────────────
 // ── Device info helper ────────────────────────────────
 function getDeviceInfo() {
@@ -348,28 +616,51 @@ function getDeviceInfo() {
 
 async function handleSignup(e) {
     e.preventDefault();
-    const name  = document.getElementById('signupName').value.trim();
-    const email = document.getElementById('signupEmail').value.trim();
-    const pass  = document.getElementById('signupPass').value;
-    const errEl = document.getElementById('signupError');
-    const btn   = e.target.querySelector('button[type=submit]');
+    const firstName = document.getElementById('signupFirst').value.trim();
+    const lastName  = document.getElementById('signupLast').value.trim();
+    const email   = document.getElementById('signupEmail').value.trim();
+    const pass    = document.getElementById('signupPass').value;
+    const confirm = document.getElementById('signupConfirm').value;
+    const errEl   = document.getElementById('signupError');
+    const succEl  = document.getElementById('signupSuccess');
+    const btn     = e.target.querySelector('button[type=submit]');
+    if (!firstName || !lastName) { errEl.textContent = 'Please enter your first and last name.'; return; }
+    if (pass !== confirm) { errEl.textContent = 'Passwords do not match.'; return; }
+    if (!document.getElementById('signupTerms').checked) { errEl.textContent = 'You must agree to the Terms and Conditions.'; return; }
     btn.disabled = true; btn.textContent = 'Creating...';
+    errEl.textContent = ''; succEl.textContent = '';
+    let cred = null;
     try {
-        const cred = await auth.createUserWithEmailAndPassword(email, pass);
-        await cred.user.updateProfile({ displayName: name });
+        cred = await auth.createUserWithEmailAndPassword(email, pass);
+
+        // Auto-generate unique username
+        let name, nameCheck;
+        do {
+            name      = generateUsername();
+            nameCheck = await db.collection('users').where('nameLower', '==', name.toLowerCase()).limit(1).get();
+        } while (!nameCheck.empty);
+
+        const avatarStyles = ['adventurer','avataaars','big-ears','bottts','fun-emoji','lorelei','micah','personas','pixel-art'];
+        const avatarStyle  = avatarStyles[Math.floor(Math.random() * avatarStyles.length)];
+        const avatarSeed   = Math.random().toString(36).substring(2, 12);
+        const avatarUrl    = `https://api.dicebear.com/7.x/${avatarStyle}/svg?seed=${avatarSeed}`;
+
+        await cred.user.updateProfile({ displayName: name, photoURL: avatarUrl });
         await db.collection('users').doc(cred.user.uid).set({
-            name,
-            email,
-            joinedAt:      firebase.firestore.FieldValue.serverTimestamp(),
-            lastLogin:     firebase.firestore.FieldValue.serverTimestamp(),
-            loginCount:    1,
+            name, nameLower: name.toLowerCase(), firstName, lastName, email, avatarUrl,
+            joinedAt:   firebase.firestore.FieldValue.serverTimestamp(),
+            lastLogin:  firebase.firestore.FieldValue.serverTimestamp(),
+            loginCount: 1,
             ...getDeviceInfo()
         });
-        closeAuth();
+        succEl.textContent = `✅ Welcome ${firstName}! Your username: ${name}`;
+        btn.textContent = 'Done!';
+        setTimeout(() => closeAuth(), 2200);
     } catch(err) {
+        if (cred) await cred.user.delete().catch(() => {});
         errEl.textContent = friendlyError(err.code);
+        btn.disabled = false; btn.textContent = 'Sign Up';
     }
-    btn.disabled = false; btn.textContent = 'Sign Up';
 }
 
 // ── Login ─────────────────────────────────────────────
@@ -398,20 +689,27 @@ async function handleLogin(e) {
 function logout() { auth.signOut(); }
 
 // ── Auth state listener ───────────────────────────────
+const ADMIN_UID = 'lHS5QzbqMOh6EExZD8ebcPPReh82';
+
 auth.onAuthStateChanged(user => {
-    const btn      = document.getElementById('authBtn');
-    const greeting = document.getElementById('userGreeting');
-    const nameEl   = document.getElementById('userNameDisplay');
-    const avatarEl = document.getElementById('userAvatar');
+    const btn        = document.getElementById('authBtn');
+    const greeting   = document.getElementById('userGreeting');
+    const nameEl     = document.getElementById('userNameDisplay');
+    const avatarEl   = document.getElementById('userAvatar');
+    const adminBtn   = document.getElementById('adminPanelBtn');
     if (user) {
         btn.style.display      = 'none';
         greeting.style.display = 'flex';
         nameEl.textContent     = user.displayName || user.email;
         if (avatarEl) avatarEl.src = user.photoURL || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${user.uid}`;
+        if (adminBtn) adminBtn.style.display = user.uid === ADMIN_UID ? '' : 'none';
     } else {
         btn.style.display      = '';
         greeting.style.display = 'none';
+        if (adminBtn) adminBtn.style.display = 'none';
     }
+    // Dispatch event so orders.js can react
+    document.dispatchEvent(new CustomEvent('authStateChanged', { detail: user }));
 });
 
 // ── Friendly error messages ───────────────────────────
@@ -504,27 +802,33 @@ document.addEventListener('click', e => {
 <!-- HERO SECTION -->
 <section class="hero">
     <div class="hero-content">
-        <h2>Buy Premium Clash Accounts</h2>
+        <h2>Buy Accounts. Skip The Grind.</h2>
         <p>In-Demand accounts. Safe deals. Instant delivery.</p>
 
         <section class="games">
-            <div class="card">
+            <div class="card" onclick="window.location.href='cr.html'">
                 <h2>Clash Royale</h2>
                 <img src="images/cr.png" class="card-img">
                 <p>High trophies, max cards and Rare Emotes</p>
                 <a href="cr.html" class="btn">Browse</a>
             </div>
-            <div class="card">
+            <div class="card" onclick="window.location.href='coc.html'">
                 <h2>Clash of Clans</h2>
                 <img src="images/coc.png" class="card-img">
-                <p>Maxed Semi & Rushed Town Hall 10–18 accounts available</p>
+                <p>Maxed, Semi & Rushed TH10–18 accounts available</p>
                 <a href="coc.html" class="btn">Browse</a>
             </div>
-            <div class="card">
+            <div class="card" onclick="window.location.href='clans.html'">
                 <h2>Clans</h2>
                 <img src="images/clan.png" class="card-img">
                 <p>Buy top-tier clans, Level 10-40, High Leagues and Name changable Clans</p>
                 <a href="clans.html" class="btn">Browse</a>
+            </div>
+            <div class="card" onclick="window.location.href='boosting.html'">
+                <h2>Boosting</h2>
+                <img src="images/boosting.png" class="card-img" onerror="this.style.display='none'">
+                <p>Wall Max, Hero Max, Trophy Pushing for CoC & CR — done fast by pros</p>
+                <a href="boosting.html" class="btn">Browse</a>
             </div>
         </section>
     </div>
@@ -536,13 +840,15 @@ document.addEventListener('click', e => {
     <!-- Left: stat pills -->
     <div class="trust-stats">
         <div class="trust-item">
-            <div class="trust-num">⚡ Instant</div>
-            <div class="trust-label">Delivery</div>
+            <img src="images/trust1.png" alt="Instant Delivery" class="trust-icon-img">
+            <div class="trust-title">Instant Delivery</div>
+            <div class="trust-label">Get your account or service delivered immediately after purchase — no waiting, no delays.</div>
         </div>
         <div class="trust-divider"></div>
         <div class="trust-item">
-            <div class="trust-num">✅ Verified</div>
-            <div class="trust-label">Listings</div>
+            <img src="images/trust2.png" alt="Verified" class="trust-icon-img">
+            <div class="trust-title">Verified Listings</div>
+            <div class="trust-label">Every account and clan listed on Clasherman is manually checked and verified before going live.</div>
         </div>
     </div>
 
@@ -565,29 +871,32 @@ document.addEventListener('click', e => {
     <!-- Right: stat pills -->
     <div class="trust-stats">
         <div class="trust-item">
-            <div class="trust-num">🔒 Safe</div>
-            <div class="trust-label">Secure Deals</div>
+            <img src="images/trust3.png" alt="Secure Deals" class="trust-icon-img">
+            <div class="trust-title">Secure Deals</div>
+            <div class="trust-label">Your transactions are fully protected. We ensure safe handovers with zero risk of scams or chargebacks.</div>
         </div>
         <div class="trust-divider"></div>
         <div class="trust-item">
-            <div class="trust-num">🏆 Top</div>
-            <div class="trust-label">Rated Seller</div>
+            <img src="images/trust4.png" alt="Top Rated" class="trust-icon-img">
+            <div class="trust-title">Top Rated Seller</div>
+            <div class="trust-label">Trusted by hundreds of players worldwide with consistent 5-star feedback across all services.</div>
         </div>
     </div>
 
 </section>
 
+
 <style>
 /* TRUST + RATING BAR */
 .trust-rating-bar {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     gap: 0;
     background: #0a0f1e;
     border-top: 1px solid rgba(255,255,255,0.08);
     border-bottom: 1px solid rgba(255,255,255,0.08);
-    padding: 24px 32px;
+    padding: 36px 40px;
     flex-wrap: wrap;
     font-family: 'Poppins', sans-serif;
 }
@@ -596,28 +905,36 @@ document.addEventListener('click', e => {
 .trust-stats {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 0;
     flex: 1;
     justify-content: center;
-    min-width: 180px;
+    min-width: 260px;
 }
 .trust-item {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 0 24px;
+    flex: 1;
 }
-.trust-num {
-    font-size: 16px;
-    font-weight: 600;
-    color: #06b6d4;
+.trust-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #e2e8f0;
 }
 .trust-label {
     font-size: 11px;
     color: rgba(255,255,255,0.4);
-    margin-top: 2px;
+    line-height: 1.6;
+    max-width: 160px;
 }
 .trust-divider {
     width: 1px;
-    height: 36px;
-    background: rgba(255,255,255,0.1);
+    align-self: stretch;
+    background: rgba(255,255,255,0.08);
+    flex-shrink: 0;
 }
 
 /* Center rating block */
@@ -689,25 +1006,50 @@ document.addEventListener('click', e => {
 <!-- FEATURES -->
 <section class="features">
     <div class="feature-box">
-        <h3>🔥 High Level Accounts</h3>
+        <img src="images/feature1.png" alt="High Level Accounts" class="feature-icon">
+        <h3>High Level Accounts</h3>
         <p>Maxed bases, rare skins, and elite progress.</p>
     </div>
 
-    <div class="feature-box">
-        <h3>⚡ Instant Delivery</h3>
-        <p>Get your account details immediately after purchase.</p>
+<div class="feature-box">
+        <img src="images/ssl.png" alt="Secure & Encrypted Transactions" class="feature-icon">
+        <h3>SSL Secured Transactions</h3>
+        <p>All payments are protected with industry-standard SSL encryption to keep your data safe.</p>
     </div>
 
     <div class="feature-box">
-        <h3>🛡️ Secure Deals</h3>
-        <p>Trusted marketplace with verified listings.</p>
+        <img src="images/feature2.png" alt="Instant Delivery" class="feature-icon">
+        <h3>Instant Delivery</h3>
+        <p>Get your account details immediately after purchase.</p>
     </div>
+
 </section>
 
 <!-- FOOTER -->
 <footer>
     <p>© 2026 Clasherman.com | All Rights Reserved</p>
 </footer>
+
+<script>
+function toggleAvatarMenu() {
+    const dd = document.getElementById('avatarDropdown');
+    dd.classList.toggle('show');
+}
+document.addEventListener('click', function(e) {
+    const wrap = document.querySelector('.avatar-wrap');
+    const dd = document.getElementById('avatarDropdown');
+    if (dd && wrap && !wrap.contains(e.target)) dd.classList.remove('show');
+});
+
+function toggleHamburger() {
+    const btn = document.querySelector('.hamburger-btn');
+    const menu = document.getElementById('hamburgerMenu');
+    const overlay = document.getElementById('hamburgerOverlay');
+    btn.classList.toggle('open');
+    menu.classList.toggle('open');
+    overlay.classList.toggle('show');
+}
+</script>
 
 </body>
 </html>

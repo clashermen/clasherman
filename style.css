@@ -4,7 +4,9 @@
     box-sizing: border-box;
 }
 
-body {
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
     font-family: 'Poppins', sans-serif;
     background: #0f172a;
     color: white;
@@ -147,6 +149,11 @@ body {
     color: white;
 }
 
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 .logo img {
     height: 70px;
     width: auto;
@@ -237,6 +244,7 @@ body {
     text-align: center;
     width: 250px;
     transition: 0.3s;
+    cursor: pointer;
 }
 
 .card:hover {

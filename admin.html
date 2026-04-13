@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/logo3.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — Clasherman</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+/* ── Reset / base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #020817;
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Login screen ── */
+#loginScreen {
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  height: 100%;
+  gap: 16px;
+}
+#loginScreen h1 { font-size: 22px; color: white; }
+#loginScreen p  { font-size: 13px; color: #64748b; }
+.login-box {
+  background: #0f172a; border: 1px solid #1e293b;
+  border-radius: 16px; padding: 32px 28px;
+  width: 340px; display: flex; flex-direction: column; gap: 12px;
+}
+.login-box input {
+  width: 100%; padding: 10px 14px; border-radius: 8px;
+  border: 1px solid #1e293b; background: #1e293b;
+  color: white; font-family: 'Poppins', sans-serif; font-size: 13px; outline: none;
+}
+.login-box input:focus { border-color: #38bdf8; }
+.login-box input::placeholder { color: #334155; }
+#loginBtn {
+  padding: 11px; border-radius: 8px; border: none;
+  background: linear-gradient(90deg, #38bdf8, #818cf8);
+  color: #0f172a; font-family: 'Poppins', sans-serif;
+  font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+}
+#loginBtn:hover { opacity: 0.85; }
+#loginErr { color: #f87171; font-size: 12px; min-height: 14px; }
+
+/* ── App layout ── */
+#app {
+  display: none;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ── Top bar ── */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; height: 52px; flex-shrink: 0;
+  background: #0f172a; border-bottom: 1px solid #1e293b;
+}
+.topbar-logo { font-size: 15px; font-weight: 700; color: white; }
+.topbar-logo span { background: linear-gradient(90deg,#38bdf8,#818cf8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.topbar-right { display: flex; align-items: center; gap: 12px; font-size: 13px; color: #64748b; }
+#adminName { color: #38bdf8; font-weight: 600; }
+.logout-btn {
+  background: none; border: 1px solid #334155; color: #94a3b8;
+  padding: 4px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif;
+  font-size: 12px; cursor: pointer; transition: 0.2s;
+}
+.logout-btn:hover { border-color: #38bdf8; color: #38bdf8; }
+
+/* ── Main area ── */
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 300px; flex-shrink: 0;
+  background: #0f172a; border-right: 1px solid #1e293b;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.sidebar-header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid #1e293b; flex-shrink: 0;
+}
+.sidebar-header h2 { font-size: 14px; font-weight: 700; color: white; margin-bottom: 10px; }
+.filter-tabs {
+  display: flex; gap: 4px; background: #1e293b;
+  border-radius: 8px; padding: 3px;
+}
+.ftab {
+  flex: 1; padding: 5px; border: none; border-radius: 6px;
+  background: transparent; color: #64748b;
+  font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500;
+  cursor: pointer; transition: 0.15s; white-space: nowrap;
+}
+.ftab.active { background: #38bdf8; color: #0f172a; font-weight: 700; }
+#orderList { flex: 1; overflow-y: auto; padding: 8px; }
+#orderList::-webkit-scrollbar { width: 4px; }
+#orderList::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+.ord-item {
+  padding: 12px 14px; border-radius: 10px; cursor: pointer;
+  border: 1px solid transparent; transition: 0.15s; margin-bottom: 6px;
+}
+.ord-item:hover  { background: #1e293b; border-color: #334155; }
+.ord-item.active { background: #1e293b; border-color: #38bdf8; }
+.ord-item-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
+.ord-item-service { font-size: 13px; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+.ord-item-time { font-size: 10px; color: #475569; flex-shrink: 0; }
+.ord-item-user { font-size: 11px; color: #64748b; margin-bottom: 4px; }
+.ord-item-preview { font-size: 11px; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ord-item-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+.s-badge { font-size: 10px; font-weight: 600; padding: 2px 9px; border-radius: 20px; }
+.s-pending    { background: rgba(251,191,36,0.15);  color: #fbbf24; }
+.s-in-progress{ background: rgba(56,189,248,0.15);  color: #38bdf8; }
+.s-completed  { background: rgba(74,222,128,0.15);  color: #4ade80; }
+.s-cancelled  { background: rgba(248,113,113,0.15); color: #f87171; }
+.unread-badge {
+  background: #38bdf8; color: #0f172a; border-radius: 50%;
+  min-width: 18px; height: 18px; font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; padding: 0 3px;
+}
+.sidebar-empty { text-align: center; color: #334155; font-size: 13px; padding: 40px 20px; }
+
+/* ── Chat area ── */
+.chat-area {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.chat-placeholder {
+  flex: 1; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; gap: 12px;
+  color: #334155;
+}
+.chat-placeholder svg { opacity: 0.3; }
+.chat-placeholder p { font-size: 14px; }
+
+/* Chat header */
+.chat-header {
+  padding: 14px 20px; border-bottom: 1px solid #1e293b;
+  flex-shrink: 0; display: flex; align-items: center; gap: 14px;
+  background: #0f172a;
+}
+.chat-header-info { flex: 1; min-width: 0; }
+.chat-header-service { font-size: 15px; font-weight: 700; color: white; }
+.chat-header-meta { font-size: 12px; color: #64748b; margin-top: 2px; }
+.chat-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.status-select {
+  padding: 6px 10px; border-radius: 8px;
+  border: 1px solid #334155; background: #1e293b;
+  color: #e2e8f0; font-family: 'Poppins', sans-serif;
+  font-size: 12px; cursor: pointer; outline: none;
+}
+
+/* Chat messages */
+.chat-msgs {
+  flex: 1; overflow-y: auto; padding: 16px 20px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.chat-msgs::-webkit-scrollbar { width: 4px; }
+.chat-msgs::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+.msg {
+  max-width: 75%; padding: 10px 14px; border-radius: 13px;
+  font-size: 13px; line-height: 1.55; word-break: break-word;
+}
+.msg.customer {
+  background: linear-gradient(135deg,#1e3a5f,#1e293b);
+  border: 1px solid #2563eb33; color: #e2e8f0;
+  align-self: flex-start; border-bottom-left-radius: 4px;
+}
+.msg.admin {
+  background: linear-gradient(135deg,#0d2a1a,#0f172a);
+  border: 1px solid #22c55e33; color: #e2e8f0;
+  align-self: flex-end; border-bottom-right-radius: 4px;
+}
+.msg-meta { font-size: 10px; color: #475569; margin-top: 4px; }
+.msg.admin .msg-meta { text-align: right; }
+.chat-empty-msg { text-align: center; color: #334155; font-size: 13px; margin: auto; }
+
+/* Chat input */
+.chat-input-area {
+  padding: 14px 20px; border-top: 1px solid #1e293b;
+  flex-shrink: 0; background: #0f172a;
+}
+.chat-input-row { display: flex; gap: 10px; align-items: flex-end; }
+#adminMsgInput {
+  flex: 1; padding: 10px 14px; border-radius: 9px;
+  border: 1px solid #1e293b; background: #1e293b; color: white;
+  font-family: 'Poppins', sans-serif; font-size: 13px; outline: none;
+  resize: none; min-height: 42px; max-height: 120px; transition: border-color 0.15s;
+}
+#adminMsgInput:focus { border-color: #38bdf8; }
+#adminMsgInput::placeholder { color: #334155; }
+#sendAdminMsg {
+  padding: 10px 20px; border-radius: 9px; border: none;
+  background: #38bdf8; color: #0f172a;
+  font-family: 'Poppins', sans-serif; font-weight: 700;
+  font-size: 13px; cursor: pointer; transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+#sendAdminMsg:hover { opacity: 0.85; }
+.chat-closed-note {
+  text-align: center; color: #64748b; font-size: 12px;
+  padding: 10px; background: #1e293b; border-radius: 8px;
+}
+
+/* ── Section tabs ── */
+.section-tabs {
+  display: flex; gap: 0; border-bottom: 1px solid #1e293b; flex-shrink: 0;
+}
+.stab {
+  flex: 1; padding: 12px 8px; border: none; background: transparent;
+  color: #64748b; font-family: 'Poppins', sans-serif; font-size: 12px;
+  font-weight: 600; cursor: pointer; transition: 0.15s;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.stab img { width: 15px; height: 15px; object-fit: contain; opacity: 0.6; transition: opacity 0.15s; }
+.stab.active-orders img, .stab.active-contacts img, .stab.active-users img { opacity: 1; }
+.stab.active-orders   { color: #38bdf8; border-bottom-color: #38bdf8; }
+.stab.active-contacts { color: #4ade80; border-bottom-color: #4ade80; }
+.stab.active-users    { color: #f59e0b; border-bottom-color: #f59e0b; }
+.stab.active-payments { color: #a78bfa; border-bottom-color: #a78bfa; }
+.stab:not(.active-orders):not(.active-contacts):not(.active-users):not(.active-payments):hover { color: #94a3b8; }
+
+/* ── UPI Payments section ── */
+.pay-item {
+  padding: 12px 14px; border-radius: 10px; cursor: pointer;
+  border: 1px solid transparent; transition: 0.15s; margin-bottom: 6px;
+  background: #0f172a;
+}
+.pay-item:hover  { background: #1e293b; border-color: #334155; }
+.pay-item.active { background: #1e293b; border-color: #a78bfa; }
+.pay-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 5px; }
+.pay-item-title { font-size: 12px; font-weight: 600; color: white; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pay-item-meta  { font-size: 10px; color: #475569; margin-top: 3px; }
+.pay-item-amount { font-size: 13px; font-weight: 700; color: #a78bfa; flex-shrink: 0; }
+.s-upi-pending  { background: rgba(251,191,36,0.15);  color: #fbbf24; }
+.s-upi-done     { background: rgba(74,222,128,0.15);  color: #4ade80; }
+.s-upi-refunded { background: rgba(248,113,113,0.15); color: #f87171; }
+
+/* ── Payment detail panel ── */
+.pay-detail { flex:1; overflow-y:auto; padding: 24px 28px; display: flex; flex-direction: column; gap: 18px; }
+.pay-detail::-webkit-scrollbar { width: 4px; }
+.pay-detail::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+.pd-section { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 16px 18px; }
+.pd-section-title { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+.pd-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 7px 0; border-bottom: 1px solid #0f172a; }
+.pd-row:last-child { border-bottom: none; padding-bottom: 0; }
+.pd-label { font-size: 12px; color: #64748b; flex-shrink: 0; }
+.pd-value { font-size: 13px; font-weight: 600; color: #e2e8f0; text-align: right; word-break: break-all; }
+.pd-value.mono { font-family: monospace; color: #a78bfa; }
+.pd-value.green { color: #4ade80; }
+.pd-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.pd-btn { padding: 10px 20px; border-radius: 9px; border: none; font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.pd-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.pd-btn-complete { background: linear-gradient(90deg,#4ade80,#22c55e); color: #0f172a; flex: 1; }
+.pd-btn-complete:hover:not(:disabled) { opacity: 0.88; }
+.pd-btn-refund   { background: rgba(248,113,113,0.15); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
+.pd-btn-refund:hover:not(:disabled)   { background: rgba(248,113,113,0.25); }
+.pd-order-id-box {
+  background: #0f172a; border: 1px solid #4ade80;
+  border-radius: 10px; padding: 14px 16px; text-align: center;
+}
+.pd-order-id-label { font-size: 11px; color: #64748b; margin-bottom: 6px; }
+.pd-order-id-val   { font-size: 22px; font-weight: 700; color: #4ade80; font-family: monospace; letter-spacing: 2px; }
+.pd-action-msg { font-size: 12px; min-height: 16px; }
+.pd-action-msg.ok  { color: #4ade80; }
+.pd-action-msg.err { color: #f87171; }
+
+/* ── Users section ── */
+.users-search-wrap { padding: 12px 12px 8px; border-bottom: 1px solid #1e293b; flex-shrink: 0; }
+.users-search {
+  width: 100%; padding: 8px 12px; border-radius: 8px;
+  border: 1px solid #1e293b; background: #1e293b; color: white;
+  font-family: 'Poppins', sans-serif; font-size: 12px; outline: none; box-sizing: border-box;
+}
+.users-search:focus { border-color: #f59e0b; }
+.users-search::placeholder { color: #334155; }
+.users-count { font-size: 11px; color: #475569; margin-top: 6px; }
+
+.user-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px; cursor: pointer;
+  border: 1px solid transparent; transition: 0.15s; margin-bottom: 5px;
+}
+.user-item:hover  { background: #1e293b; border-color: #334155; }
+.user-item.active { background: #1e293b; border-color: #f59e0b; }
+.user-item-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  object-fit: cover; background: #1e293b; flex-shrink: 0; border: 2px solid #334155;
+}
+.user-item-info { flex: 1; min-width: 0; }
+.user-item-name  { font-size: 12px; font-weight: 600; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-item-email { font-size: 10px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+.user-item-joined { font-size: 10px; color: #475569; flex-shrink: 0; }
+
+/* User detail panel */
+.user-detail {
+  flex: 1; overflow-y: auto; padding: 28px 32px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+.user-detail::-webkit-scrollbar { width: 4px; }
+.user-detail::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+.ud-header {
+  display: flex; align-items: center; gap: 20px;
+  padding-bottom: 20px; border-bottom: 1px solid #1e293b;
+}
+.ud-avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 3px solid #f59e0b; }
+.ud-name   { font-size: 20px; font-weight: 700; color: white; }
+.ud-handle { font-size: 13px; color: #f59e0b; margin-top: 2px; }
+.ud-email  { font-size: 12px; color: #64748b; margin-top: 4px; }
+.ud-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 600px) { .ud-grid { grid-template-columns: 1fr; } }
+.ud-card {
+  background: #1e293b; border: 1px solid #334155;
+  border-radius: 12px; padding: 14px 16px;
+}
+.ud-card-label { font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.ud-card-value { font-size: 14px; font-weight: 600; color: #e2e8f0; }
+.ud-card-value.mono { font-size: 11px; color: #94a3b8; font-family: monospace; word-break: break-all; }
+.ud-section-title { font-size: 13px; font-weight: 700; color: #94a3b8; border-bottom: 1px solid #1e293b; padding-bottom: 8px; margin-bottom: 2px; }
+.ud-listings-grid { display: flex; gap: 12px; flex-wrap: wrap; }
+.ud-listing-badge {
+  background: #0f172a; border: 1px solid #334155;
+  border-radius: 10px; padding: 10px 18px; text-align: center;
+}
+.ud-listing-badge .count { font-size: 22px; font-weight: 700; color: #f59e0b; }
+.ud-listing-badge .type  { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+/* Admin action buttons */
+.ud-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.ud-action-btn {
+  padding: 9px 18px; border-radius: 9px; border: none;
+  font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: 0.2s; white-space: nowrap;
+}
+.ud-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.ud-btn-username { background: #1e40af; color: white; }
+.ud-btn-username:hover:not(:disabled) { background: #1d4ed8; }
+.ud-btn-disable  { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+.ud-btn-disable:hover:not(:disabled)  { background: rgba(251,191,36,0.25); }
+.ud-btn-enable   { background: rgba(74,222,128,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
+.ud-btn-enable:hover:not(:disabled)   { background: rgba(74,222,128,0.25); }
+.ud-btn-delete   { background: #7f1d1d; color: #fca5a5; }
+.ud-btn-delete:hover:not(:disabled)   { background: #991b1b; }
+.ud-status-badge {
+  display: inline-block; font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 20px; margin-left: 8px; vertical-align: middle;
+}
+.ud-status-active   { background: rgba(74,222,128,0.15); color: #4ade80; }
+.ud-status-disabled { background: rgba(248,113,113,0.15); color: #f87171; }
+.ud-role-badge {
+  display: inline-block; font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 20px; margin-left: 6px; vertical-align: middle;
+}
+.ud-role-admin  { background: rgba(245,158,11,0.15); color: #f59e0b; }
+.ud-role-seller { background: rgba(167,139,250,0.15); color: #a78bfa; }
+.ud-role-user   { background: rgba(100,116,139,0.15); color: #64748b; }
+
+/* Username edit form */
+.ud-edit-row {
+  display: flex; gap: 8px; align-items: center; margin-top: 8px;
+}
+.ud-edit-input {
+  flex: 1; padding: 8px 12px; border-radius: 8px;
+  border: 1px solid #334155; background: #1e293b;
+  color: white; font-family: 'Poppins', sans-serif; font-size: 13px; outline: none;
+}
+.ud-edit-input:focus { border-color: #38bdf8; }
+.ud-edit-save {
+  padding: 8px 16px; border-radius: 8px; border: none;
+  background: #38bdf8; color: #0f172a;
+  font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer;
+}
+.ud-edit-cancel {
+  padding: 8px 12px; border-radius: 8px;
+  border: 1px solid #334155; background: transparent; color: #94a3b8;
+  font-family: 'Poppins', sans-serif; font-size: 12px; cursor: pointer;
+}
+.ud-action-msg { font-size: 12px; margin-top: 8px; min-height: 16px; }
+.ud-action-msg.ok  { color: #4ade80; }
+.ud-action-msg.err { color: #f87171; }
+
+/* Contact status badges */
+.cs-open     { background: rgba(74,222,128,0.15);  color: #4ade80; }
+.cs-resolved { background: rgba(148,163,184,0.15); color: #94a3b8; }
+.ftab.active-contacts { background: #4ade80; color: #0f172a; }
+
+/* ── Mobile sidebar toggle ── */
+@media (max-width: 700px) {
+  .sidebar { width: 100%; position: absolute; z-index: 10; top: 52px; bottom: 0; transform: translateX(0); transition: transform 0.25s; }
+  .sidebar.hidden { transform: translateX(-100%); }
+  .chat-area { width: 100%; }
+  .back-btn-mobile { display: flex !important; }
+}
+.back-btn-mobile {
+  display: none; background: none; border: none; color: #64748b;
+  font-family: 'Poppins', sans-serif; font-size: 12px; cursor: pointer;
+  align-items: center; gap: 4px; margin-bottom: 8px;
+}
+.back-btn-mobile:hover { color: #38bdf8; }
+</style>
+</head>
+<body>
+
+<!-- ── Login Screen ─────────────────────────────────────────────────────── -->
+<div id="loginScreen">
+  <h1><img src="images/shield.png" style="width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:8px;">Admin Panel</h1>
+  <p>Sign in with your admin account</p>
+  <div class="login-box">
+    <input type="email"    id="adminEmail" placeholder="Email">
+    <input type="password" id="adminPass"  placeholder="Password">
+    <p id="loginErr"></p>
+    <button id="loginBtn" onclick="doAdminLogin()">Sign In</button>
+  </div>
+</div>
+
+<!-- ── App ──────────────────────────────────────────────────────────────── -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">Clasherman <span>Admin</span></div>
+    <div class="topbar-right">
+      <span id="adminName"></span>
+      <a href="index.html" style="padding:7px 16px;border-radius:8px;background:#1e293b;color:#94a3b8;font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;text-decoration:none;border:1px solid #334155;transition:0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.borderColor='#38bdf8';this.style.color='#38bdf8'" onmouseout="this.style.borderColor='#334155';this.style.color='#94a3b8'"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Home</a>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <!-- Section tabs -->
+      <div class="section-tabs">
+        <button class="stab active-orders" id="stabOrders"   onclick="switchSection('orders')"><img src="images/orders.png" alt=""> Orders</button>
+        <button class="stab"               id="stabContacts" onclick="switchSection('contacts')"><img src="images/support.png" alt=""> Contact Us</button>
+        <button class="stab"               id="stabUsers"    onclick="switchSection('users')"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Users</button>
+        <button class="stab"               id="stabPayments" onclick="switchSection('payments')"><img src="images/upi.png" alt=""> Payments</button>
+      </div>
+
+      <!-- Orders header -->
+      <div class="sidebar-header" id="ordersHeader">
+        <div class="filter-tabs">
+          <button class="ftab active" id="ofall"        onclick="setFilter('all',this)">All</button>
+          <button class="ftab"        id="ofpending"    onclick="setFilter('pending',this)">Pending</button>
+          <button class="ftab"        id="ofin-progress" onclick="setFilter('in-progress',this)">Active</button>
+          <button class="ftab"        id="ofcompleted"  onclick="setFilter('completed',this)">Done</button>
+        </div>
+      </div>
+      <div id="orderList" style="flex:1;overflow-y:auto;padding:8px;"></div>
+
+      <!-- Contacts header -->
+      <div class="sidebar-header" id="contactsHeader" style="display:none">
+        <div class="filter-tabs">
+          <button class="ftab active" id="cfall"     onclick="setConFilter('all',this)">All</button>
+          <button class="ftab"        id="cfopen"    onclick="setConFilter('open',this)">Open</button>
+          <button class="ftab"        id="cfresolved" onclick="setConFilter('resolved',this)">Resolved</button>
+        </div>
+      </div>
+      <div id="contactList" style="display:none;flex:1;overflow-y:auto;padding:8px;"></div>
+
+      <!-- Users header -->
+      <div id="usersHeader" style="display:none;">
+        <div class="users-search-wrap">
+          <input class="users-search" id="userSearch" placeholder="Search by name or email…" oninput="filterUsers(this.value)">
+          <div class="users-count" id="usersCount"></div>
+        </div>
+      </div>
+      <div id="userList" style="display:none;flex:1;overflow-y:auto;padding:8px;"></div>
+
+      <!-- Payments header -->
+      <div class="sidebar-header" id="paymentsHeader" style="display:none;">
+        <div class="filter-tabs">
+          <button class="ftab active" id="pfAll"      onclick="setPayFilter('all',this)">All</button>
+          <button class="ftab"        id="pfPending"  onclick="setPayFilter('pending',this)">Pending</button>
+          <button class="ftab"        id="pfDone"     onclick="setPayFilter('completed',this)">Done</button>
+          <button class="ftab"        id="pfRefunded" onclick="setPayFilter('refunded',this)">Refunded</button>
+        </div>
+      </div>
+      <div id="paymentList" style="display:none;flex:1;overflow-y:auto;padding:8px;"></div>
+    </div>
+
+    <!-- Chat area -->
+    <div class="chat-area" id="chatArea">
+      <div id="chatPlaceholder" class="chat-placeholder">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.5">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <p>Select an order to view the chat</p>
+      </div>
+
+      <!-- Payment detail panel -->
+      <div id="paymentPanel" style="display:none; flex-direction:column; height:100%; overflow:hidden;">
+        <div class="chat-header">
+          <button class="back-btn-mobile" onclick="showSidebar()">← Back</button>
+          <div class="chat-header-info">
+            <div class="chat-header-service" id="pdHeaderTitle"></div>
+            <div class="chat-header-meta" id="pdHeaderMeta"></div>
+          </div>
+          <span id="pdHeaderBadge" class="s-badge" style="flex-shrink:0;"></span>
+        </div>
+        <div class="pay-detail" id="paymentDetailBody"></div>
+      </div>
+
+      <!-- User detail panel -->
+      <div id="userPanel" style="display:none; flex-direction:column; height:100%; overflow:hidden;">
+        <div class="chat-header">
+          <button class="back-btn-mobile" onclick="showSidebar()">← Back</button>
+          <div class="chat-header-info">
+            <div class="chat-header-service" id="udHeaderName"></div>
+            <div class="chat-header-meta" id="udHeaderMeta"></div>
+          </div>
+        </div>
+        <div class="user-detail" id="userDetailBody"></div>
+      </div>
+
+      <div id="chatPanel" style="display:none; flex-direction:column; height:100%;">
+        <div class="chat-header">
+          <button class="back-btn-mobile" onclick="showSidebar()">← Back</button>
+          <div class="chat-header-info">
+            <div class="chat-header-service" id="hService"></div>
+            <div class="chat-header-meta" id="hMeta"></div>
+          </div>
+          <div class="chat-header-actions">
+            <select id="statusSelect" class="status-select" onchange="updateActiveStatus(this.value)">
+              <option value="pending">Pending</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="chat-msgs" id="adminChatMsgs"></div>
+
+        <div class="chat-input-area" id="adminInputArea">
+          <div class="chat-input-row">
+            <textarea id="adminMsgInput" placeholder="Reply to customer…" rows="1"
+              oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAdminMessage();}"></textarea>
+            <button id="sendAdminMsg" onclick="sendAdminMessage()">Send</button>
+          </div>
+        </div>
+        <div id="adminClosedNote" class="chat-input-area" style="display:none">
+          <div class="chat-closed-note">This order is closed. Change status to reopen.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Firebase ──────────────────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "AIzaSyDXWP9NHvhgPcsIA3Fo52CbpPTKoSejqx8",
+  authDomain:        "clasherman.firebaseapp.com",
+  projectId:         "clasherman",
+  storageBucket:     "clasherman.firebasestorage.app",
+  messagingSenderId: "536431763369",
+  appId:             "1:536431763369:web:272ca187de05caadcaeeb8",
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+const ADMIN_UID   = 'lHS5QzbqMOh6EExZD8ebcPPReh82';
+const SELLER_UIDS = ['dHWJDovWGzQtF8potZInNHpsNg53'];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let _allOrders     = [];
+let _allContacts   = [];
+let _allUsers      = [];
+let _allPayments   = [];
+let _filteredUsers = [];
+let _filter        = 'all';
+let _conFilter     = 'all';
+let _payFilter     = 'all';
+let _activeSection = 'orders';
+let _activeId      = null;
+let _msgsUnsub     = null;
+let _docUnsub      = null;
+let _ordersUnsub   = null;
+let _contactsUnsub = null;
+let _usersUnsub    = null;
+let _paymentsUnsub = null;
+let _adminUser     = null;
+
+// ── Login ─────────────────────────────────────────────────────────────────────
+function doAdminLogin() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass  = document.getElementById('adminPass').value;
+  const err   = document.getElementById('loginErr');
+  const btn   = document.getElementById('loginBtn');
+  btn.textContent = 'Signing in…'; btn.disabled = true;
+  auth.signInWithEmailAndPassword(email, pass)
+    .catch(e => { err.textContent = e.message; btn.textContent = 'Sign In'; btn.disabled = false; });
+}
+
+document.getElementById('adminPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doAdminLogin();
+});
+
+function doLogout() {
+  if (_ordersUnsub)   _ordersUnsub();
+  if (_contactsUnsub) _contactsUnsub();
+  if (_usersUnsub)    _usersUnsub();
+  if (_paymentsUnsub) _paymentsUnsub();
+  if (_msgsUnsub)     _msgsUnsub();
+  if (_docUnsub)      _docUnsub();
+  auth.signOut();
+}
+
+auth.onAuthStateChanged(user => {
+  if (user && user.uid === ADMIN_UID) {
+    _adminUser = user;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    document.getElementById('app').style.flexDirection = 'column';
+    document.getElementById('adminName').textContent = user.displayName || user.email;
+    startListeningOrders();
+    startListeningContacts();
+    startListeningUsers();
+    startListeningPayments();
+  } else if (user) {
+    document.getElementById('loginErr').textContent = 'Access denied — not an admin account.';
+    auth.signOut();
+  } else {
+    _adminUser = null;
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+
+// ── Section switching ─────────────────────────────────────────────────────────
+function switchSection(section) {
+  _activeSection = section;
+  _activeId = null;
+
+  // Close any open chat/detail
+  document.getElementById('chatPlaceholder').style.display = '';
+  document.getElementById('chatPanel').style.display    = 'none';
+  document.getElementById('userPanel').style.display    = 'none';
+  document.getElementById('paymentPanel').style.display = 'none';
+  if (_msgsUnsub) { _msgsUnsub(); _msgsUnsub = null; }
+  if (_docUnsub)  { _docUnsub();  _docUnsub  = null; }
+
+  const isOrders   = section === 'orders';
+  const isContacts = section === 'contacts';
+  const isUsers    = section === 'users';
+  const isPayments = section === 'payments';
+
+  // Section tab styles
+  document.getElementById('stabOrders').className   = 'stab' + (isOrders   ? ' active-orders'   : '');
+  document.getElementById('stabContacts').className = 'stab' + (isContacts  ? ' active-contacts'  : '');
+  document.getElementById('stabUsers').className    = 'stab' + (isUsers     ? ' active-users'     : '');
+  document.getElementById('stabPayments').className = 'stab' + (isPayments  ? ' active-payments'  : '');
+
+  // Show/hide sidebar panels
+  document.getElementById('ordersHeader').style.display   = isOrders   ? '' : 'none';
+  document.getElementById('orderList').style.display      = isOrders   ? '' : 'none';
+  document.getElementById('contactsHeader').style.display = isContacts ? '' : 'none';
+  document.getElementById('contactList').style.display    = isContacts ? '' : 'none';
+  document.getElementById('usersHeader').style.display    = isUsers    ? '' : 'none';
+  document.getElementById('userList').style.display       = isUsers    ? '' : 'none';
+  document.getElementById('paymentsHeader').style.display = isPayments ? '' : 'none';
+  document.getElementById('paymentList').style.display    = isPayments ? '' : 'none';
+
+  if (isUsers) {
+    document.getElementById('userSearch').value = '';
+    renderUserSidebar(_allUsers);
+    return;
+  }
+
+  if (isPayments) {
+    renderPaymentSidebar();
+    return;
+  }
+
+  // Update status select options (orders/contacts only)
+  const sel = document.getElementById('statusSelect');
+  if (isOrders) {
+    sel.innerHTML = `
+      <option value="pending">Pending</option>
+      <option value="in-progress">In Progress</option>
+      <option value="completed">Completed</option>
+      <option value="cancelled">Cancelled</option>`;
+    document.getElementById('adminClosedNote').querySelector('.chat-closed-note').textContent =
+      'This order is closed. Change status to reopen.';
+  } else {
+    sel.innerHTML = `
+      <option value="open">Open</option>
+      <option value="resolved">Resolved</option>`;
+    document.getElementById('adminClosedNote').querySelector('.chat-closed-note').textContent =
+      'This conversation is resolved. Change status to reopen.';
+  }
+}
+
+// ── Orders listener ───────────────────────────────────────────────────────────
+function startListeningOrders() {
+  if (_ordersUnsub) _ordersUnsub();
+  _ordersUnsub = db.collection('orders')
+    .orderBy('updatedAt', 'desc')
+    .onSnapshot(snap => {
+      _allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (_activeSection === 'orders') renderOrderSidebar();
+    }, err => console.error('orders listen', err));
+}
+
+// ── Users listener ────────────────────────────────────────────────────────────
+function startListeningUsers() {
+  if (_usersUnsub) _usersUnsub();
+  _usersUnsub = db.collection('users')
+    .onSnapshot(snap => {
+      _allUsers = snap.docs.map(d => ({ uid: d.id, ...d.data() }))
+        .sort((a, b) => {
+          const ta = a.joinedAt?.toMillis?.() || 0;
+          const tb = b.joinedAt?.toMillis?.() || 0;
+          return tb - ta;
+        });
+      if (_activeSection === 'users') renderUserSidebar(_allUsers);
+    }, err => console.error('users listen', err));
+}
+
+function renderUserSidebar(users) {
+  const list = document.getElementById('userList');
+  const countEl = document.getElementById('usersCount');
+  countEl.textContent = `${users.length} user${users.length !== 1 ? 's' : ''}`;
+  if (!users.length) {
+    list.innerHTML = `<p class="sidebar-empty">No users found.</p>`;
+    return;
+  }
+  list.innerHTML = users.map(u => {
+    const r = u.uid === ADMIN_UID ? 'Admin' : SELLER_UIDS.includes(u.uid) ? 'Seller' : 'User';
+    const rc = u.uid === ADMIN_UID ? 'ud-role-admin' : SELLER_UIDS.includes(u.uid) ? 'ud-role-seller' : 'ud-role-user';
+    return `
+    <div class="user-item${_activeId === u.uid ? ' active' : ''}" onclick="openUser('${esc(u.uid)}')">
+      <img class="user-item-avatar" src="${esc(u.avatarUrl || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${u.uid}`)}" onerror="this.src='https://api.dicebear.com/7.x/pixel-art/svg?seed=${esc(u.uid)}'">
+      <div class="user-item-info">
+        <div class="user-item-name">
+          ${esc(u.name || u.email || u.uid)}
+          <span class="ud-role-badge ${rc}" style="font-size:9px;padding:2px 7px;">${r}</span>
+          ${u.disabled ? '<span class="ud-status-badge ud-status-disabled" style="font-size:9px;padding:2px 7px;">Off</span>' : ''}
+        </div>
+        <div class="user-item-email">${esc(u.email || '—')}</div>
+      </div>
+      <div class="user-item-joined">${fmtDate(u.joinedAt)}</div>
+    </div>`;
+  }).join('');
+}
+
+function filterUsers(q) {
+  const lower = q.toLowerCase().trim();
+  const filtered = lower
+    ? _allUsers.filter(u =>
+        (u.name||'').toLowerCase().includes(lower) ||
+        (u.email||'').toLowerCase().includes(lower) ||
+        (u.firstName||'').toLowerCase().includes(lower) ||
+        (u.lastName||'').toLowerCase().includes(lower)
+      )
+    : _allUsers;
+  renderUserSidebar(filtered);
+}
+
+function fmtDate(ts) {
+  if (!ts) return '—';
+  try {
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch(e) { return '—'; }
+}
+
+function fmtDateTime(ts) {
+  if (!ts) return '—';
+  try {
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  } catch(e) { return '—'; }
+}
+
+async function openUser(uid) {
+  _activeId = uid;
+  renderUserSidebar(
+    document.getElementById('userSearch').value
+      ? _allUsers.filter(u => {
+          const q = document.getElementById('userSearch').value.toLowerCase();
+          return (u.name||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q);
+        })
+      : _allUsers
+  );
+
+  const u = _allUsers.find(x => x.uid === uid);
+  if (!u) return;
+
+  document.getElementById('udHeaderName').textContent = u.name || u.email || uid;
+  document.getElementById('udHeaderMeta').textContent = u.email || uid;
+
+  // Count listings
+  const [cocSnap, crSnap, clansSnap] = await Promise.all([
+    db.collection('listings_coc').where('sellerUid','==',uid).get(),
+    db.collection('listings_cr').where('sellerUid','==',uid).get(),
+    db.collection('listings_clans').where('sellerUid','==',uid).get(),
+  ]);
+
+  const isDisabled = !!u.disabled;
+  const isAdmin    = uid === ADMIN_UID;
+  const isSeller   = SELLER_UIDS.includes(uid);
+  const roleLabel  = isAdmin ? 'Admin' : isSeller ? 'Seller' : 'User';
+  const roleClass  = isAdmin ? 'ud-role-admin' : isSeller ? 'ud-role-seller' : 'ud-role-user';
+
+  document.getElementById('userDetailBody').innerHTML = `
+    <div class="ud-header">
+      <img class="ud-avatar" src="${esc(u.avatarUrl || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${uid}`)}" onerror="this.src='https://api.dicebear.com/7.x/pixel-art/svg?seed=${esc(uid)}'">
+      <div>
+        <div class="ud-name">
+          ${esc(u.firstName || '')} ${esc(u.lastName || '')}
+          <span class="ud-role-badge ${roleClass}">${roleLabel}</span>
+          <span class="ud-status-badge ${isDisabled ? 'ud-status-disabled' : 'ud-status-active'}">${isDisabled ? 'Disabled' : 'Active'}</span>
+        </div>
+        <div class="ud-handle" id="udHandle">${esc(u.name || '—')}</div>
+        <div class="ud-email">${esc(u.email || '—')}</div>
+      </div>
+    </div>
+
+    <div class="ud-section-title">Account Info</div>
+    <div class="ud-grid">
+      <div class="ud-card">
+        <div class="ud-card-label">First Name</div>
+        <div class="ud-card-value">${esc(u.firstName || '—')}</div>
+      </div>
+      <div class="ud-card">
+        <div class="ud-card-label">Last Name</div>
+        <div class="ud-card-value">${esc(u.lastName || '—')}</div>
+      </div>
+      <div class="ud-card">
+        <div class="ud-card-label">Joined</div>
+        <div class="ud-card-value">${fmtDateTime(u.joinedAt)}</div>
+      </div>
+      <div class="ud-card">
+        <div class="ud-card-label">Last Login</div>
+        <div class="ud-card-value">${fmtDateTime(u.lastLogin)}</div>
+      </div>
+      <div class="ud-card">
+        <div class="ud-card-label">Login Count</div>
+        <div class="ud-card-value">${u.loginCount ?? '—'}</div>
+      </div>
+      <div class="ud-card">
+        <div class="ud-card-label">User ID</div>
+        <div class="ud-card-value mono">${esc(uid)}</div>
+      </div>
+    </div>
+
+    <div class="ud-section-title">Device Info</div>
+    <div class="ud-grid">
+      <div class="ud-card">
+        <div class="ud-card-label">Device</div>
+        <div class="ud-card-value">${esc(u.device || '—')}</div>
+      </div>
+      <div class="ud-card">
+        <div class="ud-card-label">Browser</div>
+        <div class="ud-card-value">${esc(u.browser || '—')}</div>
+      </div>
+      <div class="ud-card">
+        <div class="ud-card-label">OS</div>
+        <div class="ud-card-value">${esc(u.os || '—')}</div>
+      </div>
+      <div class="ud-card">
+        <div class="ud-card-label">Screen Resolution</div>
+        <div class="ud-card-value">${esc(u.screenRes || '—')}</div>
+      </div>
+    </div>
+
+    <div class="ud-section-title">Listings</div>
+    <div class="ud-listings-grid">
+      <div class="ud-listing-badge">
+        <div class="count" style="color:#38bdf8">${cocSnap.size}</div>
+        <div class="type">CoC Accounts</div>
+      </div>
+      <div class="ud-listing-badge">
+        <div class="count" style="color:#a78bfa">${crSnap.size}</div>
+        <div class="type">CR Accounts</div>
+      </div>
+      <div class="ud-listing-badge">
+        <div class="count" style="color:#4ade80">${clansSnap.size}</div>
+        <div class="type">Clans</div>
+      </div>
+    </div>
+
+    <div class="ud-section-title">Admin Actions</div>
+    <div class="ud-actions">
+      <button class="ud-action-btn ud-btn-username" onclick="showUsernameEdit('${esc(uid)}','${esc(u.name||'')}')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Change Username</button>
+      <button class="ud-action-btn ${isDisabled ? 'ud-btn-enable' : 'ud-btn-disable'}" id="udToggleBtn"
+        onclick="adminToggleDisable('${esc(uid)}', ${isDisabled})">
+        ${isDisabled
+          ? '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px;"><polyline points="20 6 9 17 4 12"/></svg>Enable Account'
+          : '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px;"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Disable Account'}
+      </button>
+      <button class="ud-action-btn ud-btn-delete" onclick="adminDeleteUser('${esc(uid)}')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Delete Account</button>
+    </div>
+    <div id="udUsernameEdit" style="display:none;">
+      <div class="ud-edit-row">
+        <input class="ud-edit-input" id="udNewUsername" placeholder="New username…">
+        <button class="ud-edit-save" onclick="adminSaveUsername('${esc(uid)}')">Save</button>
+        <button class="ud-edit-cancel" onclick="document.getElementById('udUsernameEdit').style.display='none'">Cancel</button>
+      </div>
+    </div>
+    <div class="ud-action-msg" id="udActionMsg"></div>
+  `;
+
+  document.getElementById('chatPlaceholder').style.display = 'none';
+  document.getElementById('chatPanel').style.display = 'none';
+  document.getElementById('userPanel').style.display = 'flex';
+
+  if (window.innerWidth <= 700) hideSidebar();
+}
+
+// ── Admin user actions ────────────────────────────────────────────────────────
+function showUsernameEdit(uid, currentName) {
+  const wrap = document.getElementById('udUsernameEdit');
+  wrap.style.display = 'block';
+  document.getElementById('udNewUsername').value = currentName;
+  document.getElementById('udNewUsername').focus();
+}
+
+async function adminSaveUsername(uid) {
+  const newName = document.getElementById('udNewUsername').value.trim();
+  const msgEl   = document.getElementById('udActionMsg');
+  if (!newName) { msgEl.textContent = 'Username cannot be empty.'; msgEl.className = 'ud-action-msg err'; return; }
+
+  try {
+    await db.collection('users').doc(uid).update({ name: newName, nameLower: newName.toLowerCase() });
+    // Update local cache
+    const u = _allUsers.find(x => x.uid === uid);
+    if (u) { u.name = newName; u.nameLower = newName.toLowerCase(); }
+    document.getElementById('udHandle').textContent = newName;
+    document.getElementById('udUsernameEdit').style.display = 'none';
+    msgEl.textContent = 'Username updated successfully.'; msgEl.className = 'ud-action-msg ok';
+    renderUserSidebar(_allUsers);
+  } catch(err) {
+    msgEl.textContent = 'Error: ' + err.message; msgEl.className = 'ud-action-msg err';
+  }
+}
+
+async function adminToggleDisable(uid, currentlyDisabled) {
+  const btn   = document.getElementById('udToggleBtn');
+  const msgEl = document.getElementById('udActionMsg');
+  const newState = !currentlyDisabled;
+  btn.disabled = true;
+
+  try {
+    await db.collection('users').doc(uid).update({ disabled: newState });
+    const u = _allUsers.find(x => x.uid === uid);
+    if (u) u.disabled = newState;
+    msgEl.textContent = newState ? 'Account disabled — user will be signed out.' : 'Account enabled.';
+    msgEl.className = 'ud-action-msg ok';
+    // Refresh panel
+    openUser(uid);
+  } catch(err) {
+    msgEl.textContent = 'Error: ' + err.message; msgEl.className = 'ud-action-msg err';
+    btn.disabled = false;
+  }
+}
+
+async function adminDeleteUser(uid) {
+  if (!confirm('Permanently delete this user and ALL their listings? This cannot be undone.')) return;
+
+  const msgEl = document.getElementById('udActionMsg');
+  document.querySelectorAll('.ud-action-btn').forEach(b => b.disabled = true);
+  msgEl.textContent = 'Deleting…'; msgEl.className = 'ud-action-msg ok';
+
+  try {
+    // Delete all their listings
+    const cols = ['listings_coc', 'listings_cr', 'listings_clans'];
+    for (const col of cols) {
+      const snap = await db.collection(col).where('sellerUid','==',uid).get();
+      await Promise.all(snap.docs.map(d => d.ref.delete()));
+    }
+    // Delete user document
+    await db.collection('users').doc(uid).delete();
+    // Remove from local cache
+    _allUsers = _allUsers.filter(x => x.uid !== uid);
+    _activeId = null;
+    msgEl.textContent = '';
+    document.getElementById('chatPlaceholder').style.display = '';
+    document.getElementById('userPanel').style.display = 'none';
+    renderUserSidebar(_allUsers);
+  } catch(err) {
+    msgEl.textContent = 'Error: ' + err.message; msgEl.className = 'ud-action-msg err';
+    document.querySelectorAll('.ud-action-btn').forEach(b => b.disabled = false);
+  }
+}
+
+// ── Payments listener ─────────────────────────────────────────────────────────
+function startListeningPayments() {
+  if (_paymentsUnsub) _paymentsUnsub();
+  _paymentsUnsub = db.collection('upi_payments')
+    .onSnapshot(snap => {
+      _allPayments = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => {
+          const ta = a.submittedAt?.toMillis?.() || 0;
+          const tb = b.submittedAt?.toMillis?.() || 0;
+          return tb - ta;
+        });
+      if (_activeSection === 'payments') renderPaymentSidebar();
+    }, err => console.error('payments listen', err));
+}
+
+function renderPaymentSidebar() {
+  const list = document.getElementById('paymentList');
+  const filtered = _payFilter === 'all'
+    ? _allPayments
+    : _allPayments.filter(p => p.status === _payFilter);
+
+  if (!filtered.length) {
+    list.innerHTML = '<p class="sidebar-empty">No payments found.</p>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(p => {
+    const isActive = _activeId === p.id;
+    const statusClass = p.status === 'completed' ? 's-upi-done' : p.status === 'refunded' ? 's-upi-refunded' : 's-upi-pending';
+    const statusLabel = p.status === 'completed' ? 'Completed' : p.status === 'refunded' ? 'Refunded' : 'Pending';
+    return `
+      <div class="pay-item${isActive ? ' active' : ''}" onclick="openPaymentDetail('${esc(p.id)}')">
+        <div class="pay-item-top">
+          <span class="pay-item-title">${esc(p.listingTitle || 'UPI Payment')}</span>
+          <span class="pay-item-amount">$${p.priceUsd || '—'}</span>
+        </div>
+        <div class="pay-item-meta">${esc(p.buyerEmail || '—')} · ${fmtTime(p.submittedAt)}</div>
+        <div style="margin-top:5px;"><span class="s-badge ${statusClass}">${statusLabel}</span>
+          ${p.orderId ? `<span style="font-size:10px;color:#64748b;margin-left:6px;">ID: ${esc(p.orderId)}</span>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function setPayFilter(f, btn) {
+  _payFilter = f;
+  document.querySelectorAll('#paymentsHeader .ftab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPaymentSidebar();
+}
+
+async function openPaymentDetail(id) {
+  _activeId = id;
+  renderPaymentSidebar();
+
+  const p = _allPayments.find(x => x.id === id);
+  if (!p) return;
+
+  // Fetch buyer user info
+  let buyerName = p.buyerEmail || '—';
+  let buyerAvatar = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${p.buyerUid || 'x'}`;
+  if (p.buyerUid) {
+    try {
+      const uDoc = await db.collection('users').doc(p.buyerUid).get();
+      if (uDoc.exists) { buyerName = uDoc.data().name || buyerName; buyerAvatar = uDoc.data().avatarUrl || buyerAvatar; }
+    } catch(e) {}
+  }
+
+  const statusLabel = p.status === 'completed' ? 'Completed' : p.status === 'refunded' ? 'Refunded' : 'Pending';
+  const statusClass = p.status === 'completed' ? 's-upi-done' : p.status === 'refunded' ? 's-upi-refunded' : 's-upi-pending';
+
+  document.getElementById('pdHeaderTitle').textContent = p.listingTitle || 'UPI Payment';
+  document.getElementById('pdHeaderMeta').textContent  = buyerName;
+  document.getElementById('pdHeaderBadge').textContent = statusLabel;
+  document.getElementById('pdHeaderBadge').className   = `s-badge ${statusClass}`;
+
+  const actionBtns = p.status === 'pending' ? `
+    <button class="pd-btn pd-btn-complete" onclick="markPaymentComplete('${esc(id)}')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:5px;"><polyline points="20 6 9 17 4 12"/></svg>
+      Mark as Completed
+    </button>
+    <button class="pd-btn pd-btn-refund" onclick="markPaymentRefunded('${esc(id)}')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:5px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+      Mark as Refunded
+    </button>` : `<div style="font-size:13px;color:#64748b;">This payment has been <strong style="color:white;">${statusLabel}</strong>.</div>`;
+
+  document.getElementById('paymentDetailBody').innerHTML = `
+    <!-- Buyer -->
+    <div class="pd-section">
+      <div class="pd-section-title">Buyer</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+        <img src="${esc(buyerAvatar)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #334155;">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:white;">${esc(buyerName)}</div>
+          <div style="font-size:12px;color:#64748b;">${esc(p.buyerEmail || '—')}</div>
+        </div>
+      </div>
+      <div class="pd-row"><span class="pd-label">Delivery Gmail</span><span class="pd-value green">${esc(p.deliveryEmail || '—')}</span></div>
+    </div>
+
+    <!-- Payment Info -->
+    <div class="pd-section">
+      <div class="pd-section-title">Payment Details</div>
+      <div class="pd-row"><span class="pd-label">Listing</span><span class="pd-value">${esc(p.listingTitle || '—')}</span></div>
+      <div class="pd-row"><span class="pd-label">Type</span><span class="pd-value">${esc(p.listingType || '—').toUpperCase()}</span></div>
+      <div class="pd-row"><span class="pd-label">Amount</span><span class="pd-value" style="color:#a78bfa;">$${p.priceUsd || '—'} USD</span></div>
+      <div class="pd-row"><span class="pd-label">UPI ID</span><span class="pd-value mono">${esc(p.upiId || '—')}</span></div>
+      <div class="pd-row"><span class="pd-label">Transaction ID</span><span class="pd-value mono">${esc(p.txnId || '—')}</span></div>
+      <div class="pd-row"><span class="pd-label">Submitted</span><span class="pd-value">${fmtDateTime(p.submittedAt)}</span></div>
+      ${p.orderId ? `<div class="pd-row"><span class="pd-label">Order ID</span><span class="pd-value green mono">${esc(p.orderId)}</span></div>` : ''}
+      ${p.completedAt ? `<div class="pd-row"><span class="pd-label">Completed</span><span class="pd-value">${fmtDateTime(p.completedAt)}</span></div>` : ''}
+    </div>
+
+    ${p.orderId ? `
+    <div class="pd-order-id-box">
+      <div class="pd-order-id-label">Order ID given to buyer</div>
+      <div class="pd-order-id-val">${esc(p.orderId)}</div>
+    </div>` : ''}
+
+    <!-- Actions -->
+    <div class="pd-section">
+      <div class="pd-section-title">Admin Actions</div>
+      <div class="pd-actions" id="pdActionBtns">${actionBtns}</div>
+      <div class="pd-action-msg" id="pdActionMsg" style="margin-top:10px;"></div>
+    </div>
+  `;
+
+  document.getElementById('chatPlaceholder').style.display = 'none';
+  document.getElementById('chatPanel').style.display    = 'none';
+  document.getElementById('userPanel').style.display    = 'none';
+  document.getElementById('paymentPanel').style.display = 'flex';
+
+  if (window.innerWidth <= 700) hideSidebar();
+}
+
+function generateOrderId() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let id = 'CLM-';
+  for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
+
+async function markPaymentComplete(id) {
+  const btns  = document.getElementById('pdActionBtns');
+  const msgEl = document.getElementById('pdActionMsg');
+  btns.querySelectorAll('.pd-btn').forEach(b => b.disabled = true);
+  msgEl.textContent = 'Processing…'; msgEl.className = 'pd-action-msg ok';
+
+  const orderId = generateOrderId();
+  try {
+    await db.collection('upi_payments').doc(id).update({
+      status:      'completed',
+      orderId,
+      completedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    msgEl.textContent = `Completed! Order ID ${orderId} assigned to buyer.`;
+    openPaymentDetail(id);
+  } catch(err) {
+    msgEl.textContent = 'Error: ' + err.message; msgEl.className = 'pd-action-msg err';
+    btns.querySelectorAll('.pd-btn').forEach(b => b.disabled = false);
+  }
+}
+
+async function markPaymentRefunded(id) {
+  if (!confirm('Mark this payment as refunded?')) return;
+  const btns  = document.getElementById('pdActionBtns');
+  const msgEl = document.getElementById('pdActionMsg');
+  btns.querySelectorAll('.pd-btn').forEach(b => b.disabled = true);
+
+  try {
+    await db.collection('upi_payments').doc(id).update({ status: 'refunded' });
+    msgEl.textContent = 'Marked as refunded.'; msgEl.className = 'pd-action-msg ok';
+    openPaymentDetail(id);
+  } catch(err) {
+    msgEl.textContent = 'Error: ' + err.message; msgEl.className = 'pd-action-msg err';
+    btns.querySelectorAll('.pd-btn').forEach(b => b.disabled = false);
+  }
+}
+
+// ── Contacts listener ─────────────────────────────────────────────────────────
+function startListeningContacts() {
+  if (_contactsUnsub) _contactsUnsub();
+  _contactsUnsub = db.collection('contacts')
+    .orderBy('updatedAt', 'desc')
+    .onSnapshot(snap => {
+      _allContacts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (_activeSection === 'contacts') renderContactSidebar();
+    }, err => console.error('contacts listen', err));
+}
+
+// ── Filter tabs ───────────────────────────────────────────────────────────────
+function setFilter(f, btn) {
+  _filter = f;
+  document.querySelectorAll('#ordersHeader .ftab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderOrderSidebar();
+}
+
+function setConFilter(f, btn) {
+  _conFilter = f;
+  document.querySelectorAll('#contactsHeader .ftab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderContactSidebar();
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function fmtTime(ts) {
+  if (!ts) return '';
+  try {
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    const now = new Date();
+    const diff = now - d;
+    if (diff < 60000)    return 'Just now';
+    if (diff < 3600000)  return Math.floor(diff/60000) + 'm ago';
+    if (diff < 86400000) return Math.floor(diff/3600000) + 'h ago';
+    return d.toLocaleDateString([], { month:'short', day:'numeric' });
+  } catch(e) { return ''; }
+}
+
+function orderStatusLabel(s) {
+  return { pending:'Pending', 'in-progress':'In Progress', completed:'Completed', cancelled:'Cancelled' }[s] || s;
+}
+
+function conStatusLabel(s) {
+  return { open:'Open', resolved:'Resolved' }[s] || s;
+}
+
+// ── Render order sidebar ──────────────────────────────────────────────────────
+function renderOrderSidebar() {
+  const list = document.getElementById('orderList');
+  const filtered = _filter === 'all' ? _allOrders : _allOrders.filter(o => o.status === _filter);
+
+  if (!filtered.length) {
+    list.innerHTML = `<p class="sidebar-empty">No orders found.</p>`;
+    return;
+  }
+  list.innerHTML = filtered.map(o => `
+    <div class="ord-item${_activeId === o.id ? ' active' : ''}" onclick="openOrder('${esc(o.id)}')">
+      <div class="ord-item-top">
+        <span class="ord-item-service">${esc(o.service)}</span>
+        <span class="ord-item-time">${fmtTime(o.updatedAt)}</span>
+      </div>
+      <div class="ord-item-user"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${esc(o.userName || o.userEmail || '?')}</div>
+      <div class="ord-item-preview">${esc(o.lastMsg || o.details || '')}</div>
+      <div class="ord-item-foot">
+        <span class="s-badge s-${esc(o.status)}">${esc(orderStatusLabel(o.status))}</span>
+        ${(o.unreadAdmin||0) > 0 ? `<span class="unread-badge">${o.unreadAdmin}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── Render contact sidebar ────────────────────────────────────────────────────
+function renderContactSidebar() {
+  const list = document.getElementById('contactList');
+  const filtered = _conFilter === 'all' ? _allContacts : _allContacts.filter(c => c.status === _conFilter);
+
+  if (!filtered.length) {
+    list.innerHTML = `<p class="sidebar-empty">No messages found.</p>`;
+    return;
+  }
+  list.innerHTML = filtered.map(c => `
+    <div class="ord-item${_activeId === c.id ? ' active' : ''}" style="${_activeId === c.id ? 'border-color:#4ade80' : ''}" onclick="openContactChat('${esc(c.id)}')">
+      <div class="ord-item-top">
+        <span class="ord-item-service">${esc(c.subject)}</span>
+        <span class="ord-item-time">${fmtTime(c.updatedAt)}</span>
+      </div>
+      <div class="ord-item-user"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${esc(c.userName || c.userEmail || '?')}</div>
+      <div class="ord-item-preview">${esc(c.lastMsg || c.message || '')}</div>
+      <div class="ord-item-foot">
+        <span class="s-badge cs-${esc(c.status)}">${esc(conStatusLabel(c.status))}</span>
+        ${(c.unreadAdmin||0) > 0 ? `<span class="unread-badge" style="background:#4ade80">${c.unreadAdmin}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── Open order chat ───────────────────────────────────────────────────────────
+function openOrder(id) {
+  _activeId = id;
+  const order = _allOrders.find(o => o.id === id);
+  if (!order) return;
+
+  db.collection('orders').doc(id).update({ unreadAdmin: 0 }).catch(()=>{});
+
+  document.getElementById('hService').textContent = order.service || '';
+  document.getElementById('hMeta').textContent =
+    `${order.userName || order.userEmail} · ${order.userEmail}` +
+    (order.contact && order.contact !== 'In-site chat only' ? ` · ${order.contact}` : '');
+
+  document.getElementById('statusSelect').value = order.status || 'pending';
+
+  const closed = order.status === 'completed' || order.status === 'cancelled';
+  document.getElementById('adminInputArea').style.display  = closed ? 'none' : '';
+  document.getElementById('adminClosedNote').style.display = closed ? ''     : 'none';
+
+  document.getElementById('chatPlaceholder').style.display = 'none';
+  document.getElementById('chatPanel').style.display       = 'flex';
+
+  renderOrderSidebar();
+  listenMsgs('orders', id);
+
+  if (window.innerWidth <= 700) document.getElementById('sidebar').classList.add('hidden');
+}
+
+// ── Open contact chat ─────────────────────────────────────────────────────────
+function openContactChat(id) {
+  _activeId = id;
+  const con = _allContacts.find(c => c.id === id);
+  if (!con) return;
+
+  db.collection('contacts').doc(id).update({ unreadAdmin: 0 }).catch(()=>{});
+
+  document.getElementById('hService').textContent = con.subject || '';
+  document.getElementById('hMeta').textContent =
+    `${con.userName || con.userEmail} · ${con.userEmail}`;
+
+  document.getElementById('statusSelect').value = con.status || 'open';
+
+  const closed = con.status === 'resolved';
+  document.getElementById('adminInputArea').style.display  = closed ? 'none' : '';
+  document.getElementById('adminClosedNote').style.display = closed ? ''     : 'none';
+
+  document.getElementById('chatPlaceholder').style.display = 'none';
+  document.getElementById('chatPanel').style.display       = 'flex';
+
+  renderContactSidebar();
+  listenMsgs('contacts', id);
+
+  if (window.innerWidth <= 700) document.getElementById('sidebar').classList.add('hidden');
+}
+
+function showSidebar() {
+  document.getElementById('sidebar').classList.remove('hidden');
+}
+
+// ── Messages listener (shared) ────────────────────────────────────────────────
+function listenMsgs(collection, docId) {
+  if (_msgsUnsub) { _msgsUnsub(); _msgsUnsub = null; }
+  if (_docUnsub)  { _docUnsub();  _docUnsub  = null; }
+
+  const container = document.getElementById('adminChatMsgs');
+  container.innerHTML = '<p class="chat-empty-msg">Loading…</p>';
+
+  _msgsUnsub = db.collection(collection).doc(docId)
+    .collection('messages')
+    .orderBy('createdAt', 'asc')
+    .onSnapshot(snap => {
+      const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (!msgs.length) {
+        container.innerHTML = '<p class="chat-empty-msg">No messages yet.</p>';
+        return;
+      }
+      container.innerHTML = msgs.map(m => `
+        <div class="msg ${esc(m.sender)}">
+          ${esc(m.text||'').replace(/\n/g,'<br>')}
+          <div class="msg-meta">${esc(m.senderName||'')} · ${fmtTime(m.createdAt)}</div>
+        </div>
+      `).join('');
+      requestAnimationFrame(() => { container.scrollTop = container.scrollHeight; });
+    }, err => console.error('msgs listen', err));
+
+  _docUnsub = db.collection(collection).doc(docId).onSnapshot(snap => {
+    if (!snap.exists || snap.id !== _activeId) return;
+    const d = snap.data();
+    const sel = document.getElementById('statusSelect');
+    if (sel.value !== d.status) sel.value = d.status;
+
+    const isOrders = collection === 'orders';
+    const closed   = isOrders ? (d.status === 'completed' || d.status === 'cancelled') : d.status === 'resolved';
+    document.getElementById('adminInputArea').style.display  = closed ? 'none' : '';
+    document.getElementById('adminClosedNote').style.display = closed ? ''     : 'none';
+  });
+}
+
+// ── Send admin message ────────────────────────────────────────────────────────
+async function sendAdminMessage() {
+  if (!_activeId || !_adminUser) return;
+  const ta   = document.getElementById('adminMsgInput');
+  const text = ta.value.trim();
+  if (!text) return;
+  ta.value = ''; ta.style.height = 'auto';
+
+  const col = _activeSection === 'contacts' ? 'contacts' : 'orders';
+  const batch = db.batch();
+  const msgRef = db.collection(col).doc(_activeId).collection('messages').doc();
+  batch.set(msgRef, {
+    text,
+    sender:     'admin',
+    senderName: _adminUser.displayName || 'Clasherman',
+    createdAt:  firebase.firestore.FieldValue.serverTimestamp(),
+  });
+  const docRef = db.collection(col).doc(_activeId);
+  batch.update(docRef, {
+    lastMsg:        text.slice(0, 60),
+    updatedAt:      firebase.firestore.FieldValue.serverTimestamp(),
+    unreadCustomer: firebase.firestore.FieldValue.increment(1),
+    unreadAdmin:    0,
+  });
+  await batch.commit().catch(err => console.error('send admin msg', err));
+}
+
+// ── Update status ─────────────────────────────────────────────────────────────
+async function updateActiveStatus(newStatus) {
+  if (!_activeId) return;
+  const col = _activeSection === 'contacts' ? 'contacts' : 'orders';
+  await db.collection(col).doc(_activeId).update({
+    status:    newStatus,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  }).catch(err => console.error('update status', err));
+}
+</script>
+</body>
+</html>

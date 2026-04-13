@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/logo3.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Listing - Clasherman</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="auth.js" defer></script>
+<style>
+.edit-page { max-width: 700px; margin: 60px auto; padding: 0 20px 80px; font-family: 'Poppins', sans-serif; }
+.edit-page h1 { font-size: 26px; font-weight: 700; color: white; margin-bottom: 6px; }
+.edit-page h1 span { background: linear-gradient(90deg,#38bdf8,#818cf8); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+.edit-page p.sub { color: #94a3b8; font-size: 14px; margin-bottom: 30px; }
+.edit-card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 28px 24px; margin-bottom: 20px; }
+.edit-card h2 { font-size: 15px; font-weight: 600; color: #38bdf8; margin-bottom: 18px; }
+label.field-label { display: block; font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 6px; letter-spacing: 0.4px; text-transform: uppercase; }
+.edit-page input[type=text],
+.edit-page input[type=number],
+.edit-page textarea {
+    width: 100%; padding: 11px 14px; border-radius: 8px;
+    border: 1px solid #334155; background: #0f172a;
+    color: white; font-family: 'Poppins', sans-serif;
+    font-size: 14px; outline: none; box-sizing: border-box;
+    margin-bottom: 16px;
+}
+.edit-page input:focus, .edit-page textarea:focus { border-color: #38bdf8; }
+.edit-page input::placeholder, .edit-page textarea::placeholder { color: #475569; }
+.edit-page textarea { height: 100px; resize: vertical; }
+
+/* Image grid */
+.img-grid {
+    display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
+}
+.img-slot {
+    position: relative; width: 90px; height: 90px;
+}
+.img-slot img {
+    width: 100%; height: 100%; object-fit: cover;
+    border-radius: 10px; border: 2px solid #334155;
+    display: block;
+}
+.img-slot .del-img-btn {
+    position: absolute; top: -7px; right: -7px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #ef4444; color: white; border: none;
+    font-size: 11px; font-weight: 700; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4); z-index: 1;
+}
+.img-slot.deleted img { opacity: 0.3; filter: grayscale(1); border-color: #ef4444; }
+.img-slot.deleted .del-img-btn { background: #64748b; }
+
+/* Add button */
+.add-img-btn {
+    width: 90px; height: 90px; border-radius: 10px;
+    border: 2px dashed #334155; background: transparent;
+    color: #38bdf8; font-size: 28px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s; position: relative;
+}
+.add-img-btn:hover { border-color: #38bdf8; background: rgba(56,189,248,0.06); }
+.add-img-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+
+/* New image slots */
+.img-slot.new-img img { border-color: #38bdf8; }
+.img-slot.new-img .del-img-btn { background: #374151; }
+
+.save-btn {
+    width: 100%; padding: 13px; border-radius: 10px; border: none;
+    background: linear-gradient(90deg, #38bdf8, #818cf8);
+    color: #0f172a; font-family: 'Poppins', sans-serif;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: opacity 0.2s; margin-top: 8px;
+}
+.save-btn:hover { opacity: 0.88; }
+.save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.edit-msg { margin-top: 14px; font-size: 13px; text-align: center; min-height: 20px; }
+.edit-msg.error { color: #f87171; }
+.edit-msg.success { color: #4ade80; }
+.progress-bar-wrap { background: #0f172a; border-radius: 99px; height: 6px; margin-top: 12px; overflow: hidden; display: none; }
+.progress-bar { height: 100%; background: linear-gradient(90deg,#38bdf8,#818cf8); border-radius: 99px; width: 0%; transition: width 0.3s; }
+.loading-state { text-align: center; padding: 80px; color: #94a3b8; font-size: 15px; }
+.access-denied { text-align: center; padding: 80px 20px; color: #94a3b8; font-size: 15px; }
+.access-denied a { color: #38bdf8; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">
+        <img src="images/logo.png" alt="Clasherman Logo">
+    </div>
+    <div class="mobile-nav">
+        <a href="#" id="backLink">← Back</a>
+    </div>
+</header>
+
+<div id="loadingState" class="loading-state">Loading listing...</div>
+<div id="accessDenied" class="access-denied" style="display:none;">
+    <p>⛔ You don't have permission to edit this listing.<br><a href="index.html">← Go home</a></p>
+</div>
+
+<div class="edit-page" id="editPage" style="display:none;">
+    <h1>Edit <span id="editTypeLabel">Listing</span></h1>
+    <p class="sub">Make your changes below and hit Save.</p>
+
+    <div class="edit-card">
+        <h2>Listing Info</h2>
+        <label class="field-label">Title</label>
+        <input type="text" id="editTitle" placeholder="Listing title">
+        <label class="field-label">Price (USD)</label>
+        <input type="number" id="editPrice" placeholder="Price" min="1">
+        <label class="field-label">Description</label>
+        <textarea id="editDesc" placeholder="Description (optional)"></textarea>
+    </div>
+
+    <div class="edit-card" id="thumbCard">
+        <h2>Thumbnail</h2>
+        <div class="img-grid" id="thumbGrid"></div>
+    </div>
+
+    <div class="edit-card">
+        <h2>Gallery Images</h2>
+        <div class="img-grid" id="galleryGrid"></div>
+    </div>
+
+    <div class="progress-bar-wrap" id="progressWrap">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <p class="edit-msg" id="editMsg"></p>
+    <button class="save-btn" id="saveBtn" onclick="saveEdit()">Save Changes</button>
+</div>
+
+<script>
+const params      = new URLSearchParams(window.location.search);
+const listingId   = params.get('id');
+const listingType = params.get('type'); // coc | cr | clans
+
+const COLS = {
+    coc:   { collection: 'listings_coc',   label: 'CoC Account', back: 'coc.html' },
+    cr:    { collection: 'listings_cr',    label: 'CR Account',  back: 'cr.html' },
+    clans: { collection: 'listings_clans', label: 'Clan',        back: 'clans.html' }
+};
+
+const CLOUDINARY_CLOUD  = 'devql3q5z';
+const CLOUDINARY_PRESET = 'clasherman_upload';
+
+let existingThumb   = null;  // current thumbnail URL (string or null if deleted)
+let existingGallery = [];    // current gallery URLs (strings, some may be null = deleted)
+let newGalleryFiles = [];    // new File objects to upload
+
+const backLink = document.getElementById('backLink');
+
+document.addEventListener('authStateChanged', async (e) => {
+    const user = e.detail;
+    if (!user || !listingId || !listingType || !COLS[listingType]) {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('accessDenied').style.display = 'block';
+        return;
+    }
+
+    backLink.href = COLS[listingType].back;
+    backLink.textContent = '← Back to ' + COLS[listingType].label + 's';
+    document.getElementById('editTypeLabel').textContent = COLS[listingType].label;
+
+    try {
+        const doc = await window._db.collection(COLS[listingType].collection).doc(listingId).get();
+        const isAdmin = user.uid === 'lHS5QzbqMOh6EExZD8ebcPPReh82';
+        if (!doc.exists || (!isAdmin && doc.data().sellerUid !== user.uid)) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('accessDenied').style.display = 'block';
+            return;
+        }
+
+        const d = doc.data();
+        document.getElementById('editTitle').value = d.title || '';
+        document.getElementById('editPrice').value = d.price || '';
+        document.getElementById('editDesc').value  = d.description || '';
+
+        // Thumbnail
+        existingThumb = d.thumbnail || null;
+        renderThumb();
+
+        // Gallery
+        existingGallery = (d.images || []).filter(u => u && u !== d.thumbnail);
+        renderGallery();
+
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('editPage').style.display = 'block';
+    } catch(err) {
+        document.getElementById('loadingState').textContent = 'Error loading listing.';
+    }
+});
+
+// ── Thumbnail ────────────────────────────────────────────────────────────────
+function renderThumb() {
+    const grid = document.getElementById('thumbGrid');
+    grid.innerHTML = '';
+    if (existingThumb) {
+        const slot = document.createElement('div');
+        slot.className = 'img-slot';
+        slot.innerHTML = `<img src="${existingThumb}"><button class="del-img-btn" onclick="deleteThumb()" title="Remove">✕</button>`;
+        grid.appendChild(slot);
+    } else {
+        // Show add button for new thumbnail
+        const add = document.createElement('label');
+        add.className = 'add-img-btn';
+        add.title = 'Upload thumbnail';
+        add.innerHTML = `<input type="file" accept="image/*" onchange="replaceThumb(this)">+`;
+        grid.appendChild(add);
+    }
+}
+
+function deleteThumb() {
+    existingThumb = null;
+    renderThumb();
+}
+
+let newThumbFile = null;
+function replaceThumb(input) {
+    const file = input.files[0];
+    if (!file) return;
+    newThumbFile = file;
+    existingThumb = URL.createObjectURL(file); // preview
+    renderThumb();
+    // mark it so we know it's a new file
+    document.getElementById('thumbGrid').querySelector('.img-slot').dataset.newFile = '1';
+}
+
+// ── Gallery ──────────────────────────────────────────────────────────────────
+function renderGallery() {
+    const grid = document.getElementById('galleryGrid');
+    grid.innerHTML = '';
+
+    existingGallery.forEach((url, i) => {
+        if (!url) return;
+        const slot = document.createElement('div');
+        slot.className = 'img-slot';
+        slot.innerHTML = `<img src="${url}"><button class="del-img-btn" onclick="deleteGalleryImg(${i})" title="Remove">✕</button>`;
+        grid.appendChild(slot);
+    });
+
+    newGalleryFiles.forEach((file, i) => {
+        const url = URL.createObjectURL(file);
+        const slot = document.createElement('div');
+        slot.className = 'img-slot new-img';
+        slot.innerHTML = `<img src="${url}"><button class="del-img-btn" onclick="deleteNewImg(${i})" title="Remove">✕</button>`;
+        grid.appendChild(slot);
+    });
+
+    const total = existingGallery.filter(Boolean).length + newGalleryFiles.length;
+    if (total < 5) {
+        const add = document.createElement('label');
+        add.className = 'add-img-btn';
+        add.title = 'Add image';
+        add.innerHTML = `<input type="file" accept="image/*" multiple onchange="addGalleryImgs(this)">+`;
+        grid.appendChild(add);
+    }
+}
+
+function deleteGalleryImg(i) {
+    existingGallery[i] = null;
+    renderGallery();
+}
+
+function deleteNewImg(i) {
+    newGalleryFiles.splice(i, 1);
+    renderGallery();
+}
+
+function addGalleryImgs(input) {
+    const files = Array.from(input.files);
+    const slots = existingGallery.filter(Boolean).length + newGalleryFiles.length;
+    const canAdd = 5 - slots;
+    newGalleryFiles.push(...files.slice(0, canAdd));
+    renderGallery();
+}
+
+// ── Upload to Cloudinary ─────────────────────────────────────────────────────
+async function uploadFile(file) {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLOUDINARY_PRESET);
+    const res  = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method:'POST', body: fd });
+    const data = await res.json();
+    if (!data.secure_url) throw new Error(data.error?.message || 'Upload failed');
+    return data.secure_url;
+}
+
+// ── Save ─────────────────────────────────────────────────────────────────────
+async function saveEdit() {
+    const title = document.getElementById('editTitle').value.trim();
+    const price = document.getElementById('editPrice').value.trim();
+    const desc  = document.getElementById('editDesc').value.trim();
+    const msg   = document.getElementById('editMsg');
+    const btn   = document.getElementById('saveBtn');
+
+    if (!title) { msg.textContent = 'Please enter a title.'; msg.className = 'edit-msg error'; return; }
+    if (!price)  { msg.textContent = 'Please enter a price.'; msg.className = 'edit-msg error'; return; }
+
+    btn.disabled = true; btn.textContent = 'Saving...'; msg.textContent = '';
+    const toUpload = (newThumbFile ? 1 : 0) + newGalleryFiles.length;
+    let done = 0;
+    if (toUpload > 0) document.getElementById('progressWrap').style.display = 'block';
+    const setP = () => { done++; document.getElementById('progressBar').style.width = `${Math.round((done/toUpload)*100)}%`; };
+
+    try {
+        // Upload new thumbnail if any
+        let thumbUrl = existingThumb && !existingThumb.startsWith('blob:') ? existingThumb : null;
+        if (newThumbFile) { thumbUrl = await uploadFile(newThumbFile); setP(); }
+
+        // Upload new gallery images
+        const uploadedNew = [];
+        for (const f of newGalleryFiles) { uploadedNew.push(await uploadFile(f)); setP(); }
+
+        // Final gallery = existing (non-null, non-blob) + new uploaded
+        const finalGallery = [
+            ...existingGallery.filter(u => u && !u.startsWith('blob:')),
+            ...uploadedNew
+        ];
+
+        const updates = { title, price: Number(price), description: desc, images: finalGallery };
+        if (thumbUrl !== undefined) updates.thumbnail = thumbUrl || '';
+
+        await window._db.collection(COLS[listingType].collection).doc(listingId).update(updates);
+
+        msg.textContent = '✅ Listing updated!'; msg.className = 'edit-msg success';
+        btn.textContent = 'Saved!';
+        setTimeout(() => { window.location.href = COLS[listingType].back; }, 1500);
+    } catch(err) {
+        msg.textContent = 'Error: ' + err.message; msg.className = 'edit-msg error';
+        btn.disabled = false; btn.textContent = 'Save Changes';
+    }
+}
+</script>
+</body>
+</html>
